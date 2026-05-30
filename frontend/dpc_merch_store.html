@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DPC Merch Store — Digital Plug Co.</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #0f0f1a; color: #fff; font-family: 'Inter', sans-serif; }
+    header { background: #1a1a2e; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e94560; }
+    header h1 { color: #e94560; font-size: 1.5rem; letter-spacing: 3px; }
+    header nav a { color: #a29bfe; text-decoration: none; margin-left: 24px; font-weight: 600; }
+    .hero { background: linear-gradient(135deg, #1a1a2e, #16213e); padding: 60px 40px; text-align: center; }
+    .hero h2 { font-size: 2.5rem; color: #e94560; margin-bottom: 12px; }
+    .hero p { color: #a29bfe; font-size: 1.1rem; margin-bottom: 32px; }
+    .hero button { background: #e94560; color: #fff; border: none; padding: 14px 36px; border-radius: 8px; font-size: 1rem; font-weight: 700; cursor: pointer; }
+    .products { padding: 60px 40px; }
+    .products h2 { color: #a29bfe; margin-bottom: 32px; font-size: 1.8rem; }
+    .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; }
+    .product-card { background: #1a1a2e; border: 1px solid #16213e; border-radius: 12px; overflow: hidden; transition: transform 0.2s; }
+    .product-card:hover { transform: translateY(-4px); border-color: #e94560; }
+    .product-img { width: 100%; height: 200px; background: linear-gradient(135deg, #e94560, #a29bfe); display: flex; align-items: center; justify-content: center; font-size: 3rem; }
+    .product-info { padding: 16px; }
+    .product-info h3 { color: #fff; margin-bottom: 8px; }
+    .product-info .price { color: #00b894; font-size: 1.2rem; font-weight: 700; margin-bottom: 12px; }
+    .product-info .tag { background: #e94560; color: #fff; font-size: 11px; padding: 2px 8px; border-radius: 12px; margin-right: 6px; }
+    .product-info button { width: 100%; background: #e94560; color: #fff; border: none; padding: 10px; border-radius: 8px; font-weight: 700; cursor: pointer; margin-top: 12px; }
+    .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a2e; border-top: 2px solid #e94560; padding: 16px 40px; display: flex; justify-content: space-between; align-items: center; }
+    .cart-bar span { color: #a29bfe; }
+    .cart-bar button { background: #00b894; color: #fff; border: none; padding: 10px 28px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+    footer { background: #1a1a2e; padding: 40px; text-align: center; color: #636e72; border-top: 1px solid #16213e; margin-bottom: 70px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>DPC MERCH</h1>
+    <nav>
+      <a href="#">Shop</a>
+      <a href="#">About</a>
+      <a href="#">Contact</a>
+      <a href="#" style="background:#e94560;padding:8px 16px;border-radius:8px;color:#fff">🛒 Cart (0)</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <h2>THE PLUG IS OPEN</h2>
+    <p>Premium merch. Cannabis culture. Digital lifestyle. Shipped fast.</p>
+    <button>SHOP NOW</button>
+  </section>
+
+  <section class="products">
+    <h2>Featured Drops</h2>
+    <div class="product-grid">
+      <div class="product-card">
+        <div class="product-img">👕</div>
+        <div class="product-info">
+          <h3>AXIOM Tee</h3>
+          <div class="price">$34.99</div>
+          <span class="tag">NEW</span><span class="tag">LIMITED</span>
+          <button onclick="alert('Added to cart!')">ADD TO CART</button>
+        </div>
+      </div>
+      <div class="product-card">
+        <div class="product-img">🧢</div>
+        <div class="product-info">
+          <h3>Digital Plug Snapback</h3>
+          <div class="price">$29.99</div>
+          <span class="tag">BESTSELLER</span>
+          <button onclick="alert('Added to cart!')">ADD TO CART</button>
+        </div>
+      </div>
+      <div class="product-card">
+        <div class="product-img">🌿</div>
+        <div class="product-info">
+          <h3>Cannabis Culture Hoodie</h3>
+          <div class="price">$64.99</div>
+          <span class="tag">HOT</span>
+          <button onclick="alert('Added to cart!')">ADD TO CART</button>
+        </div>
+      </div>
+      <div class="product-card">
+        <div class="product-img">📱</div>
+        <div class="product-info">
+          <h3>DPC Phone Case</h3>
+          <div class="price">$19.99</div>
+          <span class="tag">NEW</span>
+          <button onclick="alert('Added to cart!')">ADD TO CART</button>
+        </div>
+      </div>
+      <div class="product-card">
+        <div class="product-img">☕</div>
+        <div class="product-info">
+          <h3>Plug Life Mug</h3>
+          <div class="price">$14.99</div>
+          <button onclick="alert('Added to cart!')">ADD TO CART</button>
+        </div>
+      </div>
+      <div class="product-card">
+        <div class="product-img">🎓</div>
+        <div class="product-info">
+          <h3>AXIOM Sticker Pack</h3>
+          <div class="price">$9.99</div>
+          <span class="tag">FAN FAV</span>
+          <button onclick="alert('Added to cart!')">ADD TO CART</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="cart-bar">
+    <span>0 items in cart — $0.00</span>
+    <button>CHECKOUT</button>
+  </div>
+
+  <footer>
+    <p>&copy; 2025 Digital Plug Co. All rights reserved. | Built on AXIOM</p>
+  </footer>
+</body>
+</html>
