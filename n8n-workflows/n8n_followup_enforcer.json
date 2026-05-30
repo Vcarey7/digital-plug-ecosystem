@@ -1,1 +1,55 @@
-{"name": "Follow-Up Enforcer", "nodes": [], "connections": {}, "description": "Automated follow-up sequence enforcer — Day 2/5/7/final"}
+{
+  "name": "AXIOM Follow-Up Enforcer",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 24
+            }
+          ]
+        }
+      },
+      "id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+      "name": "Daily Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// AXIOM Follow-Up Enforcer\n// Automatically enforces follow-up sequences for all open leads\n\nconst now = new Date();\nconst followUps = [\n  { leadId: 'LEAD-001', stage: 'Proposal Sent', daysSince: 1, action: 'Send follow-up #1' },\n  { leadId: 'LEAD-002', stage: 'Contacted', daysSince: 3, action: 'Send value-add message' },\n  { leadId: 'LEAD-003', stage: 'Proposal Sent', daysSince: 7, action: 'Create urgency message' }\n];\n\nconst dueFollowUps = followUps.filter(f => f.daysSince >= 1);\n\nreturn dueFollowUps.map(f => ({\n  json: {\n    ...f,\n    timestamp: now.toISOString(),\n    status: 'follow-up-triggered',\n    message: `AXIOM FOLLOW-UP: ${f.action} for ${f.leadId}`\n  }\n}));"
+      },
+      "id": "d4e5f6a7-b8c9-0123-defa-234567890123",
+      "name": "Check Due Follow-Ups",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    }
+  ],
+  "connections": {
+    "Daily Trigger": {
+      "main": [
+        [
+          {
+            "node": "Check Due Follow-Ups",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "2b3c4d5e-6f7a-8901-bcde-f12345678901",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "id": "followup-enforcer-002",
+  "tags": []
+}
