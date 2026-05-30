@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DPC ManyChat Flows — Digital Plug Co.</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #0f0f1a; color: #fff; font-family: 'Inter', sans-serif; padding: 32px; }
+    h1 { color: #e94560; letter-spacing: 2px; margin-bottom: 8px; }
+    p.subtitle { color: #636e72; margin-bottom: 40px; }
+    .flow-section { margin-bottom: 48px; }
+    .flow-section h2 { color: #a29bfe; font-size: 1.3rem; margin-bottom: 20px; border-left: 4px solid #e94560; padding-left: 12px; }
+    .flow-step { background: #1a1a2e; border: 1px solid #16213e; border-radius: 10px; padding: 16px 20px; margin-bottom: 12px; display: flex; align-items: flex-start; gap: 16px; }
+    .step-num { background: #e94560; color: #fff; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; flex-shrink: 0; }
+    .step-content h3 { color: #fff; font-size: 0.95rem; margin-bottom: 4px; }
+    .step-content p { color: #a29bfe; font-size: 0.85rem; margin-bottom: 6px; }
+    .message-bubble { background: #16213e; border-left: 3px solid #00b894; border-radius: 0 8px 8px 0; padding: 10px 14px; font-size: 0.85rem; color: #dfe6e9; font-style: italic; margin-top: 6px; }
+    .tag { background: #00b894; color: #fff; font-size: 10px; padding: 2px 8px; border-radius: 10px; margin-right: 6px; display: inline-block; margin-top: 4px; }
+    .tag.red { background: #e94560; }
+    .tag.purple { background: #a29bfe; }
+  </style>
+</head>
+<body>
+  <h1>DPC MANYCHAT FLOWS</h1>
+  <p class="subtitle">Welcome + Qualifier Automation — Digital Plug Co. | Facebook & Instagram</p>
+
+  <!-- FLOW 1: WELCOME FLOW -->
+  <div class="flow-section">
+    <h2>👋 Flow 1: Welcome Flow (New Subscriber)</h2>
+
+    <div class="flow-step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h3>Trigger: User sends DM or clicks "Get Started"</h3>
+        <p>Platform: Facebook Messenger + Instagram DM</p>
+        <span class="tag">AUTO-REPLY</span>
+        <div class="message-bubble">
+          "Hey [First Name]! 🔥 Welcome to Digital Plug Co. — where automation meets hustle. I'm AXIOM, your AI assistant. Are you here to grow your business, check out our products, or learn more about what we do?"
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h3>Quick Reply Buttons</h3>
+        <p>Present 3 options to route the user</p>
+        <span class="tag purple">BUTTON A</span> Grow My Business<br>
+        <span class="tag purple">BUTTON B</span> Shop Products<br>
+        <span class="tag purple">BUTTON C</span> Learn More
+      </div>
+    </div>
+
+    <div class="flow-step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h3>Branch: Button A — Grow My Business</h3>
+        <p>Routes to Qualifier Flow</p>
+        <div class="message-bubble">
+          "Love it! Let me ask you a few quick questions so I can connect you with the right resources. This takes about 60 seconds. Ready?"
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <h3>Branch: Button B — Shop Products</h3>
+        <p>Sends merch store link</p>
+        <div class="message-bubble">
+          "Check out our latest drops here 👇 [STORE LINK] | New merch weekly. Use code PLUG10 for 10% off your first order!"
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-step">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <h3>Branch: Button C — Learn More</h3>
+        <p>Sends DPC overview</p>
+        <div class="message-bubble">
+          "Digital Plug Co. is an AI-powered business ecosystem. We run automated lead gen, content creation, and sales closing — all powered by our AXIOM agent stack. Want to see how we can help YOUR business?"
+        </div>
+        <span class="tag">FOLLOW-UP</span> Re-offer Qualify or Shop after 24hrs
+      </div>
+    </div>
+  </div>
+
+  <!-- FLOW 2: QUALIFIER FLOW -->
+  <div class="flow-section">
+    <h2>🎯 Flow 2: Qualifier Flow (Lead Scoring)</h2>
+
+    <div class="flow-step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h3>Q1: What type of business do you run?</h3>
+        <span class="tag purple">A</span> Cannabis / CBD<br>
+        <span class="tag purple">B</span> E-Commerce / Retail<br>
+        <span class="tag purple">C</span> Service Business<br>
+        <span class="tag purple">D</span> Content Creator
+        <p style="margin-top:8px;color:#636e72;font-size:0.8rem">Tags applied based on answer for segmentation</p>
+      </div>
+    </div>
+
+    <div class="flow-step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h3>Q2: What's your biggest challenge right now?</h3>
+        <span class="tag purple">A</span> Getting more leads<br>
+        <span class="tag purple">B</span> Closing sales<br>
+        <span class="tag purple">C</span> Creating content<br>
+        <span class="tag purple">D</span> Managing operations
+      </div>
+    </div>
+
+    <div class="flow-step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h3>Q3: What's your monthly revenue range?</h3>
+        <span class="tag purple">A</span> Just starting out<br>
+        <span class="tag purple">B</span> $1K – $10K/mo<br>
+        <span class="tag purple">C</span> $10K – $50K/mo<br>
+        <span class="tag purple">D</span> $50K+/mo
+        <p style="margin-top:8px;color:#636e72;font-size:0.8rem">High-value leads ($10K+) flagged for immediate CLOSER handoff</p>
+      </div>
+    </div>
+
+    <div class="flow-step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <h3>Qualifier Complete — Route by Score</h3>
+        <span class="tag">HIGH VALUE</span> Send to AXIOM Closer + notify team<br>
+        <span class="tag red">MID VALUE</span> Send nurture sequence (7-day email)<br>
+        <span class="tag purple">LOW VALUE</span> Send free resource + re-engage in 30 days
+        <div class="message-bubble">
+          "Thanks [First Name]! Based on what you shared, I think we can really help. I'm going to connect you with our team — expect a message within 24 hours. In the meantime, here's something valuable for you: [LEAD MAGNET LINK]"
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-step">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <h3>CRM + n8n Webhook Trigger</h3>
+        <p>All qualifier data sent to n8n via webhook → HubSpot CRM → AXIOM lead pipeline</p>
+        <span class="tag">WEBHOOK</span> POST to n8n_axiom_lead_pipeline endpoint
+      </div>
+    </div>
+  </div>
+</body>
+</html>
