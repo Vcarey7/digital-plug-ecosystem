@@ -76,40 +76,37 @@ export default function ExpenseTracker() {
 
   // Load persisted data
   useEffect(() => {
-    (async () => {
-      try {
-        const ex = await window.storage.get("expenses");
-        if (ex && ex.value) setExpenses(JSON.parse(ex.value));
-      } catch (e) {
-        /* no existing data */
-      }
-      try {
-        const v = await window.storage.get("ventures");
-        if (v && v.value) setVentures(JSON.parse(v.value));
-      } catch (e) {
-        /* no existing data */
-      }
-      setLoaded(true);
-    })();
+    try {
+      const ex = localStorage.getItem("expenses");
+      if (ex) setExpenses(JSON.parse(ex));
+    } catch (e) {
+      /* no existing data */
+    }
+    try {
+      const v = localStorage.getItem("ventures");
+      if (v) setVentures(JSON.parse(v));
+    } catch (e) {
+      /* no existing data */
+    }
+    setLoaded(true);
   }, []);
 
-  const persistExpenses = async (next) => {
+  const persistExpenses = (next) => {
     setExpenses(next);
     setSaving(true);
     try {
-      const res = await window.storage.set("expenses", JSON.stringify(next));
-      if (!res) setError("Couldn't save — try again.");
-      else setError("");
+      localStorage.setItem("expenses", JSON.stringify(next));
+      setError("");
     } catch (e) {
       setError("Couldn't save — try again.");
     }
     setSaving(false);
   };
 
-  const persistVentures = async (next) => {
+  const persistVentures = (next) => {
     setVentures(next);
     try {
-      await window.storage.set("ventures", JSON.stringify(next));
+      localStorage.setItem("ventures", JSON.stringify(next));
     } catch (e) {
       setError("Couldn't save the venture list.");
     }
