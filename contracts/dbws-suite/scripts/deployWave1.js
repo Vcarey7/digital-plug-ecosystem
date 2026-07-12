@@ -87,6 +87,8 @@ async function main() {
   const tldAuction = await deploy("TLDAuctionEngine", await plug.getAddress(), treasury, admin);
   const userTldRegistry = await deploy("UserTLDRegistry", await plug.getAddress(), treasury, admin);
   const tldRoyalty = await deploy("TLDRoyalty", admin);
+  await deploy("TLDCatalog", admin);
+  console.log("  (run scripts/seedTLDs.js next to list + mint the 246-TLD catalog)");
 
   const affiliateTracker = await deploy("AffiliateTracker", await plug.getAddress(), treasury, admin);
   await registrar.setAffiliateTracker(await affiliateTracker.getAddress());

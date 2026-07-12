@@ -72,7 +72,25 @@ and `DPAToken` exists.
 ### Registry — `wave1/registry/`
 PlugRegistry, PlugResolver, PlugRegistrar (commit-reveal protected, see
 below), TLDValuationOracle, TLDPriceController, TLDAuctionEngine,
-UserTLDRegistry, TLDRoyalty.
+UserTLDRegistry, TLDRoyalty, TLDCatalog.
+
+### TLD catalog — `tld/`
+`TLDCatalog.sol` is the on-chain source of truth for tier (LEGENDARY/GOLD/
+STANDARD/STARTER), category, and reserved status per TLD; `UserTLDRegistry`
+and the registrar read it for pricing and to block protocol-reserved names
+from public minting. `tld/catalog.js` holds the master list — 246 unique
+TLDs across 14 categories, deduplicated automatically — with `tld/
+TLD_CATALOG.md` and `.csv` as human-readable exports. After
+`deployWave1.js`, run:
+
+```bash
+node tld/catalog.js                                   # preview counts
+npx hardhat run scripts/seedTLDs.js --network amoy     # list + mint all TLDs
+```
+
+This lists every TLD into `TLDCatalog` and mints the protocol inventory into
+`UserTLDRegistry`, writing `deployments/<network>/tld-manifest.json`. Both
+steps are idempotent — safe to re-run if interrupted.
 
 ### DeFi — `wave1/defi/`, `wave2/defi/`
 | Contract | Wave | Purpose |
