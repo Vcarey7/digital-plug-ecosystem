@@ -3,7 +3,7 @@ import { ethers } from 'ethers';
 import { Search, CheckCircle2, XCircle, Loader2, Clock, Globe } from 'lucide-react';
 import { useWeb3 } from '../../contexts/Web3Context';
 import { useNotification } from '../../contexts/NotificationContext';
-import { SUPPORTED_TLDS } from '../../config/contracts';
+import { SUPPORTED_TLDS, PLUG_REGISTRAR_ADDRESS } from '../../config/contracts';
 import {
   savePendingCommitment,
   getPendingCommitment,
@@ -11,30 +11,35 @@ import {
 } from '../../lib/pendingCommitments';
 
 const DURATIONS = [
-  { label: '1 year', seconds: 365 * 24 * 60 * 60 },
-  { label: '2 years', seconds: 2 * 365 * 24 * 60 * 60 },
-  { label: '5 years', seconds: 5 * 365 * 24 * 60 * 60 },
+  { label: '1 year', years: 1 },
+  { label: '2 years', years: 2 },
+  { label: '5 years', years: 5 },
 ];
 
 const LABEL_PATTERN = /^[a-z0-9-]{1,63}$/;
 
 const DomainSearch = () => {
-  const { account, connectWallet, getContract, isContractConfigured } = useWeb3();
+  const { account, connectWallet, getContract, isContractConfigured, ensureAllowance } = useWeb3();
   const { showSuccess, showError, showInfo } = useNotification();
 
   const [label, setLabel] = useState('');
   const [tld, setTld] = useState(SUPPORTED_TLDS[0]);
-  const [duration, setDuration] = useState(DURATIONS[0].seconds);
-  const [status, setStatus] = useState('idle'); // idle | invalid | checking | available | taken
+  const [years, setYears] = useState(DURATIONS[0].years);
+  const [payInPlug, setPayInPlug] = useState(false);
+  const [status, setStatus] = useState('idle'); // idle | invalid | checking | available | taken | disabled
   const [price, setPrice] = useState(null);
   const [pending, setPending] = useState(null);
   const [now, setNow] = useState(Date.now());
   const [busy, setBusy] = useState(false);
+  const [minCommitmentAgeMs, setMinCommitmentAgeMs] = useState(60 * 1000);
 
   const cleanLabel = label.trim().toLowerCase();
+  const tldName = tld.slice(1); // registry stores TLDs without the dot
   const fullName = cleanLabel ? `${cleanLabel}${tld}` : '';
   const labelValid = cleanLabel.length === 0 || LABEL_PATTERN.test(cleanLabel);
-  const registryConfigured = isContractConfigured('domainRegistry');
+  const registryConfigured = isContractConfigured('plugRegistry') && isContractConfigured('plugRegistrar');
+  const payToken = payInPlug ? 'plugToken' : 'usdc';
+  const payTokenLabel = payInPlug ? '$PLUG' : 'USDC';
 
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 1000);
@@ -63,26 +68,24 @@ const DomainSearch = () => {
     setStatus('checking');
     (async () => {
       try {
-        const registry = getContract('domainRegistry');
-        const tldName = tld.slice(1); // registry stores TLDs without the dot
-        const tldHash = await registry.namehash(tldName);
-        const isTldRegistered = await registry.registeredTLDs(tldHash);
-        if (!isTldRegistered) {
+        const registrar = getContract('plugRegistrar');
+        const cfg = await registrar.tldConfig(tldName);
+        if (!cfg.enabled) {
           if (!cancelled) {
-            setStatus('idle');
-            showError('TLD not available', `${tld} hasn't been registered on this deployment yet.`);
+            setStatus('disabled');
+            showError('TLD not available', `${tld} hasn't been enabled for registration on this deployment yet.`);
           }
           return;
         }
 
-        const domainHash = await registry.namehash(fullName);
-        const exists = await registry.domainExists(domainHash);
+        const registry = getContract('plugRegistry');
+        const available = await registry.isAvailable(cleanLabel, tldName);
         if (cancelled) return;
 
-        setStatus(exists ? 'taken' : 'available');
-        if (!exists) {
-          const basePrice = await registry.baseDomainPrice();
-          if (!cancelled) setPrice(basePrice);
+        setStatus(available ? 'available' : 'taken');
+        if (available) {
+          const cost = await registrar.quote(cleanLabel, tldName, years, payInPlug);
+          if (!cancelled) setPrice(cost);
         } else {
           setPrice(null);
         }
@@ -97,11 +100,27 @@ const DomainSearch = () => {
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cleanLabel, tld, registryConfigured]);
+  }, [cleanLabel, tld, years, payInPlug, registryConfigured]);
 
-  const minAgeMs = 60 * 1000; // matches DomainRegistry's default minCommitmentAge
-  const canReveal = pending && now - pending.committedAt >= minAgeMs;
-  const revealCountdownSec = pending ? Math.max(0, Math.ceil((minAgeMs - (now - pending.committedAt)) / 1000)) : 0;
+  // Read the registrar's actual commit-reveal window instead of assuming.
+  useEffect(() => {
+    if (!registryConfigured) return;
+    (async () => {
+      try {
+        const registrar = getContract('plugRegistrar');
+        const minAge = await registrar.minCommitmentAge();
+        setMinCommitmentAgeMs(Number(minAge) * 1000);
+      } catch {
+        // keep the 60s default if this fails (e.g. address not deployed yet)
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [registryConfigured]);
+
+  const canReveal = pending && now - pending.committedAt >= minCommitmentAgeMs;
+  const revealCountdownSec = pending
+    ? Math.max(0, Math.ceil((minCommitmentAgeMs - (now - pending.committedAt)) / 1000))
+    : 0;
 
   async function handleCommit() {
     if (!account) {
@@ -110,11 +129,10 @@ const DomainSearch = () => {
     }
     setBusy(true);
     try {
-      const registry = getContract('domainRegistry', true);
-      const tldName = tld.slice(1);
+      const registrar = getContract('plugRegistrar', true);
       const secret = ethers.hexlify(ethers.randomBytes(32));
-      const commitment = await registry.makeDomainCommitment(tldName, cleanLabel, account, secret);
-      const tx = await registry.commit(commitment);
+      const commitment = await registrar.makeCommitment(cleanLabel, tldName, account, secret);
+      const tx = await registrar.commit(commitment);
       await tx.wait();
 
       const record = { owner: account, secret, committedAt: Date.now() };
@@ -131,17 +149,19 @@ const DomainSearch = () => {
   async function handleRegister() {
     setBusy(true);
     try {
-      const registry = getContract('domainRegistry', true);
-      const tldName = tld.slice(1);
-      const cost = await registry.baseDomainPrice();
-      const tx = await registry.registerDomain(
-        tldName,
+      const registrar = getContract('plugRegistrar', true);
+      const cost = await registrar.quote(cleanLabel, tldName, years, payInPlug);
+
+      showInfo('Approving payment', `Approving ${payTokenLabel} for the registrar...`);
+      await ensureAllowance(payToken, PLUG_REGISTRAR_ADDRESS, cost);
+
+      const tx = await registrar.registerDomain(
         cleanLabel,
-        duration,
-        ethers.ZeroAddress,
-        '',
+        tldName,
         pending.secret,
-        { value: cost }
+        years,
+        payInPlug,
+        ethers.ZeroAddress
       );
       await tx.wait();
 
@@ -162,20 +182,21 @@ const DomainSearch = () => {
     if (status === 'checking') return { icon: Loader2, text: 'Checking availability...', color: 'text-muted-foreground', spin: true };
     if (status === 'available') return { icon: CheckCircle2, text: 'Available', color: 'text-green-400' };
     if (status === 'taken') return { icon: XCircle, text: 'Already registered', color: 'text-red-400' };
+    if (status === 'disabled') return { icon: XCircle, text: `${tld} isn't enabled for registration yet.`, color: 'text-red-400' };
     return null;
-  }, [status, cleanLabel]);
+  }, [status, cleanLabel, tld]);
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-serif font-bold gold-gradient">Domain Search</h1>
-        <p className="text-muted-foreground">Find and register a .plug or .dbws domain.</p>
+        <p className="text-muted-foreground">Find and register a .plug or .dbws domain, paid in USDC or $PLUG.</p>
       </div>
 
       {!registryConfigured && (
         <div className="luxury-card p-4 text-sm text-yellow-400">
-          DomainRegistry address isn't configured. Set VITE_DOMAIN_REGISTRY_ADDRESS in .env after deploying the
-          contracts.
+          PlugRegistry/PlugRegistrar aren't configured. Set VITE_PLUG_REGISTRY_ADDRESS and
+          VITE_PLUG_REGISTRAR_ADDRESS in .env after deploying contracts/dbws-suite.
         </div>
       )}
 
@@ -221,10 +242,10 @@ const DomainSearch = () => {
               <div className="flex gap-1 bg-secondary rounded-lg p-1">
                 {DURATIONS.map((d) => (
                   <button
-                    key={d.seconds}
-                    onClick={() => setDuration(d.seconds)}
+                    key={d.years}
+                    onClick={() => setYears(d.years)}
                     className={`px-2.5 py-1 text-xs rounded-md ${
-                      duration === d.seconds ? 'bg-primary text-primary-foreground font-medium' : 'text-muted-foreground'
+                      years === d.years ? 'bg-primary text-primary-foreground font-medium' : 'text-muted-foreground'
                     }`}
                   >
                     {d.label}
@@ -233,9 +254,32 @@ const DomainSearch = () => {
               </div>
             </div>
 
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-sm text-muted-foreground">Pay with</span>
+              <div className="flex gap-1 bg-secondary rounded-lg p-1">
+                {[
+                  { label: 'USDC', value: false },
+                  { label: '$PLUG (discounted)', value: true },
+                ].map((opt) => (
+                  <button
+                    key={opt.label}
+                    onClick={() => setPayInPlug(opt.value)}
+                    className={`px-2.5 py-1 text-xs rounded-md ${
+                      payInPlug === opt.value ? 'bg-primary text-primary-foreground font-medium' : 'text-muted-foreground'
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {price !== null && (
               <p className="text-sm text-muted-foreground mb-4">
-                Price: <span className="text-foreground font-medium">{ethers.formatEther(price)} MATIC</span>
+                Price:{' '}
+                <span className="text-foreground font-medium">
+                  {ethers.formatUnits(price, payInPlug ? 18 : 6)} {payTokenLabel}
+                </span>
               </p>
             )}
 
@@ -252,7 +296,7 @@ const DomainSearch = () => {
                     : `Wait ${revealCountdownSec}s before completing (anti front-running delay)`}
                 </div>
                 <button onClick={handleRegister} disabled={busy || !canReveal} className="luxury-button w-full">
-                  {busy ? 'Registering...' : '2. Complete registration'}
+                  {busy ? 'Registering...' : `2. Approve ${payTokenLabel} & complete registration`}
                 </button>
               </div>
             )}

@@ -33,7 +33,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { useNotification } from '../../contexts/NotificationContext';
 
 const Dashboard = () => {
-  const { isAdmin, isTLDOwner } = useAuth();
+  const { isAdmin, isRegistrar } = useAuth();
   const { showError } = useNotification();
   
   const [timeRange, setTimeRange] = useState('30d');

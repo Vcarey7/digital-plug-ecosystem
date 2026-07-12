@@ -4,8 +4,8 @@ import { useWeb3 } from '../contexts/Web3Context';
 // Wallet-native auth: "signed in" simply means a wallet is connected on the
 // right network -- every write call already requires a wallet signature per
 // transaction, so a separate sign-in step adds friction without adding real
-// security here. Role is read directly from DomainRegistry's on-chain
-// owner()/tldRegistrar() rather than a mocked/off-chain user table, since
+// security here. Role is read directly from PlugRegistry's on-chain
+// AccessControl roles rather than a mocked/off-chain user table, since
 // there's no backend in this build to source it from.
 export const useAuth = () => {
   const { account, isConnected, getContract, isContractConfigured } = useWeb3();
@@ -18,7 +18,7 @@ export const useAuth = () => {
     const resolveRole = async () => {
       setIsLoading(true);
 
-      if (!isConnected || !account || !isContractConfigured('domainRegistry')) {
+      if (!isConnected || !account || !isContractConfigured('plugRegistry')) {
         if (!cancelled) {
           setUserRole('user');
           setIsLoading(false);
@@ -27,19 +27,22 @@ export const useAuth = () => {
       }
 
       try {
-        const registry = getContract('domainRegistry');
-        const [contractOwner, tldRegistrar] = await Promise.all([
-          registry.owner(),
-          registry.tldRegistrar(),
+        const registry = getContract('plugRegistry');
+        const [adminRole, registrarRole] = await Promise.all([
+          registry.DEFAULT_ADMIN_ROLE(),
+          registry.REGISTRAR_ROLE(),
+        ]);
+        const [isAdmin, isRegistrar] = await Promise.all([
+          registry.hasRole(adminRole, account),
+          registry.hasRole(registrarRole, account),
         ]);
 
         if (cancelled) return;
 
-        const lowerAccount = account.toLowerCase();
-        if (contractOwner.toLowerCase() === lowerAccount) {
+        if (isAdmin) {
           setUserRole('admin');
-        } else if (tldRegistrar.toLowerCase() === lowerAccount) {
-          setUserRole('tld_owner');
+        } else if (isRegistrar) {
+          setUserRole('registrar');
         } else {
           setUserRole('user');
         }
@@ -58,7 +61,7 @@ export const useAuth = () => {
   }, [account, isConnected, getContract, isContractConfigured]);
 
   const hasPermission = (requiredRole) => {
-    const roleHierarchy = { user: 0, tld_owner: 1, admin: 2 };
+    const roleHierarchy = { user: 0, registrar: 1, admin: 2 };
     return roleHierarchy[userRole] >= roleHierarchy[requiredRole];
   };
 
@@ -68,7 +71,7 @@ export const useAuth = () => {
     isLoading,
     isAuthenticated: Boolean(isConnected && account),
     isAdmin: userRole === 'admin',
-    isTLDOwner: userRole === 'tld_owner' || userRole === 'admin',
+    isRegistrar: userRole === 'registrar' || userRole === 'admin',
     hasPermission,
   };
 };

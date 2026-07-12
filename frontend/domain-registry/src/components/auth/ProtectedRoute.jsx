@@ -56,7 +56,7 @@ const ProtectedRoute = ({
     const getRoleDisplayName = (role) => {
       switch (role) {
         case 'admin': return 'Administrator';
-        case 'tld_owner': return 'TLD Owner';
+        case 'registrar': return 'Registrar';
         case 'user': return 'User';
         default: return role;
       }

@@ -82,6 +82,13 @@ async function main() {
   );
   await registry.grantRole(await registry.REGISTRAR_ROLE(), await registrar.getAddress());
 
+  // Enable the two flagship TLDs for direct registration through the
+  // registrar (USDC/PLUG pricing, 3/4-char premiums), so the frontend has
+  // something registerable immediately after deploy.
+  await registrar.configureTLD("plug", true, 25_000_000n, ethers.parseEther("20"), 30_000, 15_000);
+  await registrar.configureTLD("dbws", true, 25_000_000n, ethers.parseEther("20"), 30_000, 15_000);
+  console.log("  Enabled TLDs: .plug, .dbws (25 USDC / 20 PLUG per year, base price)");
+
   const tldOracle = await deploy("TLDValuationOracle", admin);
   const tldPriceController = await deploy("TLDPriceController", await tldOracle.getAddress());
   const tldAuction = await deploy("TLDAuctionEngine", await plug.getAddress(), treasury, admin);

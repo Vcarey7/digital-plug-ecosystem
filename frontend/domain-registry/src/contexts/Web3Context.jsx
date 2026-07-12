@@ -1,14 +1,15 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { ethers } from 'ethers';
 import {
-  DOMAIN_REGISTRY_ADDRESS,
-  PUBLIC_RESOLVER_ADDRESS,
-  BATCH_MINTING_ADDRESS,
+  PLUG_REGISTRY_ADDRESS,
   PLUG_REGISTRAR_ADDRESS,
-  DOMAIN_REGISTRY_ABI,
-  PUBLIC_RESOLVER_ABI,
-  BATCH_MINTING_ABI,
+  PLUG_RESOLVER_ADDRESS,
+  USDC_ADDRESS,
+  PLUG_TOKEN_ADDRESS,
+  PLUG_REGISTRY_ABI,
   PLUG_REGISTRAR_ABI,
+  PLUG_RESOLVER_ABI,
+  ERC20_ABI,
   NETWORKS,
   ACTIVE_NETWORK,
 } from '../config/contracts';
@@ -24,10 +25,11 @@ export const useWeb3 = () => {
 };
 
 const CONTRACTS = {
-  domainRegistry: { address: DOMAIN_REGISTRY_ADDRESS, abi: DOMAIN_REGISTRY_ABI },
-  publicResolver: { address: PUBLIC_RESOLVER_ADDRESS, abi: PUBLIC_RESOLVER_ABI },
-  batchMinting: { address: BATCH_MINTING_ADDRESS, abi: BATCH_MINTING_ABI },
+  plugRegistry: { address: PLUG_REGISTRY_ADDRESS, abi: PLUG_REGISTRY_ABI },
   plugRegistrar: { address: PLUG_REGISTRAR_ADDRESS, abi: PLUG_REGISTRAR_ABI },
+  plugResolver: { address: PLUG_RESOLVER_ADDRESS, abi: PLUG_RESOLVER_ABI },
+  usdc: { address: USDC_ADDRESS, abi: ERC20_ABI },
+  plugToken: { address: PLUG_TOKEN_ADDRESS, abi: ERC20_ABI },
 };
 
 export const Web3Provider = ({ children }) => {
@@ -143,6 +145,22 @@ export const Web3Provider = ({ children }) => {
 
   const isContractConfigured = (contractName) => Boolean(CONTRACTS[contractName]?.address);
 
+  // Registration/renewal is paid in USDC or $PLUG (ERC-20 pull via
+  // transferFrom), not native currency. Approve the spender for the exact
+  // amount first if the current allowance is short, then let the caller
+  // send the real write tx.
+  const ensureAllowance = async (tokenContractName, spender, amount) => {
+    if (!account) {
+      throw new Error('Wallet not connected');
+    }
+    const token = getContract(tokenContractName, true);
+    const current = await token.allowance(account, spender);
+    if (current < amount) {
+      const tx = await token.approve(spender, amount);
+      await tx.wait();
+    }
+  };
+
   // Format address for display
   const formatAddress = (address) => {
     if (!address) return '';
@@ -230,6 +248,7 @@ export const Web3Provider = ({ children }) => {
     switchNetwork,
     getContract,
     isContractConfigured,
+    ensureAllowance,
 
     // Utilities
     formatAddress,

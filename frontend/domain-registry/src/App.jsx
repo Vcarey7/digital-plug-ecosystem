@@ -141,7 +141,7 @@ function App() {
                       <Route 
                         path="/tld-management" 
                         element={
-                          <ProtectedRoute requireAuth={true} requiredRole="tld_owner">
+                          <ProtectedRoute requireAuth={true} requiredRole="registrar">
                             <TLDManagement />
                           </ProtectedRoute>
                         } 

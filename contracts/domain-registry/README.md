@@ -1,5 +1,17 @@
 # Digital Plug Domains — Smart Contracts
 
+> **⚠ Superseded — not the production registry.** This ENS-style namehash-tree
+> registry was the first build in this repo, before the full DBWS contract
+> suite existed. The project has since standardized on
+> [`contracts/dbws-suite`](../dbws-suite)'s `PlugRegistry` (flat `name.tld` +
+> built-in reputation score) as the canonical domain registry — it's what the
+> TLD marketplace (`UserTLDRegistry`, `TLDAuctionEngine`, `TLDValuationOracle`,
+> `TLDCatalog`'s 246-TLD catalog) and the credit/lending contracts
+> (`CommunityCredit`, `BlockBondNFT`) are built and tested against. Kept here
+> for reference and because the commit-reveal / authorized-registrar patterns
+> below were carried forward into `PlugRegistrar` in `dbws-suite`. Do not
+> deploy this suite as "the" registry — use `dbws-suite` instead.
+
 An ERC-721 based web3 domain registry supporting TLDs and subdomains
 (ENS-style namehash tree), deployed to Polygon. Domains are minted as NFTs;
 owners can resolve them, add subdomains, renew before expiry, or let a

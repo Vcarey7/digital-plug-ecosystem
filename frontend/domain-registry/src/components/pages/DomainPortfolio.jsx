@@ -8,15 +8,17 @@ import {
   Plus,
   Clock,
   Globe,
-  Eye
+  Eye,
+  Award
 } from 'lucide-react';
 import { useWeb3 } from '../../contexts/Web3Context';
 import { useNotification } from '../../contexts/NotificationContext';
+import { PLUG_REGISTRAR_ADDRESS } from '../../config/contracts';
 
-const RENEW_DURATION = 365 * 24 * 60 * 60; // 1 year
+const RENEW_YEARS = 1;
 
 const DomainPortfolio = () => {
-  const { account, getContract, isContractConfigured } = useWeb3();
+  const { account, getContract, isContractConfigured, ensureAllowance } = useWeb3();
   const { showError, showSuccess } = useNotification();
 
   const [domains, setDomains] = useState([]);
@@ -28,8 +30,9 @@ const DomainPortfolio = () => {
   const [sortBy, setSortBy] = useState('name'); // 'name', 'expiry'
   const [renewingId, setRenewingId] = useState(null);
 
+  const registryConfigured = isContractConfigured('plugRegistry') && isContractConfigured('plugRegistrar');
+
   const getStatus = (domain) => {
-    if (domain.isTLD) return 'active';
     const daysLeft = Math.ceil((domain.expires - new Date()) / (1000 * 60 * 60 * 24));
     if (daysLeft < 0) return 'expired';
     if (daysLeft < 30) return 'expiring';
@@ -37,7 +40,7 @@ const DomainPortfolio = () => {
   };
 
   const fetchDomains = useCallback(async () => {
-    if (!account || !isContractConfigured('domainRegistry')) {
+    if (!account || !registryConfigured) {
       setDomains([]);
       setIsLoading(false);
       return;
@@ -45,34 +48,36 @@ const DomainPortfolio = () => {
 
     setIsLoading(true);
     try {
-      const registry = getContract('domainRegistry');
-      const hashes = await registry.getOwnerDomains(account);
+      const registry = getContract('plugRegistry');
+      const balance = await registry.balanceOf(account);
+      const tokenIds = await Promise.all(
+        Array.from({ length: Number(balance) }, (_, i) => registry.tokenOfOwnerByIndex(account, i))
+      );
 
       const resolved = await Promise.all(
-        hashes.map(async (hash) => {
-          const info = await registry.getDomain(hash);
+        tokenIds.map(async (tokenId) => {
+          const rec = await registry.domains(tokenId);
           return {
-            hash,
-            name: info.name,
-            tokenId: info.tokenId.toString(),
-            owner: info.owner,
-            resolver: info.resolver,
-            expires: new Date(Number(info.expiry) * 1000),
-            isTLD: info.isTLD,
-            parentHash: info.parentHash,
+            tokenId: tokenId.toString(),
+            name: rec.name,
+            tld: rec.tld,
+            fullName: `${rec.name}.${rec.tld}`,
+            owner: account,
+            resolver: rec.resolver,
+            expires: new Date(Number(rec.expiresAt) * 1000),
+            registeredAt: new Date(Number(rec.registeredAt) * 1000),
+            reputation: Number(rec.reputation),
           };
         })
       );
 
-      // Skip TLDs the account owns -- this view is for registered domains,
-      // not the TLDs themselves.
-      setDomains(resolved.filter((d) => !d.isTLD));
+      setDomains(resolved);
     } catch (error) {
       showError('Failed to Load Domains', error.reason || error.message);
     } finally {
       setIsLoading(false);
     }
-  }, [account, getContract, isContractConfigured, showError]);
+  }, [account, getContract, registryConfigured, showError]);
 
   useEffect(() => {
     fetchDomains();
@@ -82,7 +87,7 @@ const DomainPortfolio = () => {
     let filtered = domains;
 
     if (searchTerm) {
-      filtered = filtered.filter((domain) => domain.name.toLowerCase().includes(searchTerm.toLowerCase()));
+      filtered = filtered.filter((domain) => domain.fullName.toLowerCase().includes(searchTerm.toLowerCase()));
     }
 
     if (filterStatus !== 'all') {
@@ -91,7 +96,7 @@ const DomainPortfolio = () => {
 
     filtered = [...filtered].sort((a, b) => {
       if (sortBy === 'expiry') return a.expires - b.expires;
-      return a.name.localeCompare(b.name);
+      return a.fullName.localeCompare(b.fullName);
     });
 
     setFilteredDomains(filtered);
@@ -118,11 +123,13 @@ const DomainPortfolio = () => {
   const handleRenewDomain = async (domain) => {
     setRenewingId(domain.tokenId);
     try {
-      const registry = getContract('domainRegistry', true);
-      const cost = await registry.baseDomainPrice();
-      const tx = await registry.renewDomain(domain.hash, RENEW_DURATION, { value: cost });
+      const registrar = getContract('plugRegistrar', true);
+      const cost = await registrar.quote(domain.name, domain.tld, RENEW_YEARS, false);
+      await ensureAllowance('usdc', PLUG_REGISTRAR_ADDRESS, cost);
+
+      const tx = await registrar.renewDomain(domain.tokenId, domain.name, domain.tld, RENEW_YEARS, false);
       await tx.wait();
-      showSuccess('Domain Renewed', `${domain.name} has been renewed for 1 year`);
+      showSuccess('Domain Renewed', `${domain.fullName} has been renewed for 1 year`);
       await fetchDomains();
     } catch (error) {
       showError('Renewal Failed', error.reason || error.shortMessage || error.message);
@@ -142,7 +149,7 @@ const DomainPortfolio = () => {
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-2">
             <Globe size={20} className="text-primary" />
-            <h3 className="font-mono font-bold text-lg">{domain.name}</h3>
+            <h3 className="font-mono font-bold text-lg">{domain.fullName}</h3>
           </div>
           <div className={`px-2 py-1 rounded-full text-xs font-medium ${statusColor}`}>{status}</div>
         </div>
@@ -161,6 +168,13 @@ const DomainPortfolio = () => {
           </div>
 
           <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground flex items-center gap-1">
+              <Award size={12} /> Reputation
+            </span>
+            <span className="font-mono">{domain.reputation} / 1000</span>
+          </div>
+
+          <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Resolver</span>
             <span className="font-mono text-xs">
               {domain.resolver === ethers.ZeroAddress ? 'Not set' : `${domain.resolver.slice(0, 6)}...${domain.resolver.slice(-4)}`}
@@ -174,7 +188,7 @@ const DomainPortfolio = () => {
           className="w-full flex items-center justify-center gap-2 luxury-button text-sm disabled:opacity-60"
         >
           <Clock size={14} />
-          {isRenewing ? 'Renewing...' : 'Renew 1 Year'}
+          {isRenewing ? 'Renewing...' : 'Renew 1 Year (USDC)'}
         </button>
       </div>
     );
@@ -191,13 +205,14 @@ const DomainPortfolio = () => {
         <td className="px-4 py-3">
           <div className="flex items-center gap-2">
             <Globe size={16} className="text-primary" />
-            <span className="font-mono font-medium">{domain.name}</span>
+            <span className="font-mono font-medium">{domain.fullName}</span>
           </div>
         </td>
         <td className="px-4 py-3">
           <div className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${statusColor}`}>{status}</div>
         </td>
         <td className="px-4 py-3 text-sm">{daysLeft > 0 ? `${daysLeft} days` : 'Expired'}</td>
+        <td className="px-4 py-3 text-sm font-mono">{domain.reputation}</td>
         <td className="px-4 py-3 text-sm font-mono">#{domain.tokenId}</td>
         <td className="px-4 py-3">
           <button
@@ -331,6 +346,7 @@ const DomainPortfolio = () => {
                 <th className="px-4 py-3 text-left text-sm font-medium">Domain</th>
                 <th className="px-4 py-3 text-left text-sm font-medium">Status</th>
                 <th className="px-4 py-3 text-left text-sm font-medium">Expires</th>
+                <th className="px-4 py-3 text-left text-sm font-medium">Reputation</th>
                 <th className="px-4 py-3 text-left text-sm font-medium">Token ID</th>
                 <th className="px-4 py-3 text-left text-sm font-medium">Actions</th>
               </tr>

@@ -57,8 +57,8 @@ const Header = () => {
     switch (userRole) {
       case 'admin':
         return { label: 'Administrator', icon: Crown, color: 'text-yellow-400' };
-      case 'tld_owner':
-        return { label: 'TLD Owner', icon: Crown, color: 'text-blue-400' };
+      case 'registrar':
+        return { label: 'Registrar', icon: Crown, color: 'text-blue-400' };
       default:
         return { label: 'User', icon: User, color: 'text-gray-400' };
     }
