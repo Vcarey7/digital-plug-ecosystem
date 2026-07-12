@@ -1,0 +1,23 @@
+{
+  "name": "dbws-suite",
+  "version": "1.0.0",
+  "description": "Digital Black Wall Street — full ecosystem contract suite, wave-gated by legal-review status",
+  "main": "index.js",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy:wave1:amoy": "hardhat run scripts/deployWave1.js --network amoy",
+    "deploy:wave1:polygon": "hardhat run scripts/deployWave1.js --network polygon",
+    "deploy:wave2:amoy": "hardhat run scripts/deployWave2.js --network amoy",
+    "deploy:wave2:polygon": "hardhat run scripts/deployWave2.js --network polygon"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@openzeppelin/contracts": "^5.6.1",
+    "dotenv": "^16.6.1",
+    "hardhat": "^2.28.6"
+  }
+}
