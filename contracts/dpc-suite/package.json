@@ -1,0 +1,21 @@
+{
+  "name": "dpc-suite",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy:amoy": "hardhat run scripts/deploy_all.js --network amoy",
+    "deploy:polygon": "hardhat run scripts/deploy_all.js --network polygon"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@openzeppelin/contracts": "^5.6.1",
+    "dotenv": "^16.6.1",
+    "hardhat": "^2.28.6"
+  }
+}
