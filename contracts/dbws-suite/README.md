@@ -1,9 +1,22 @@
 # DBWS Suite — Digital Black Wall Street
 
-The full on-chain layer for the DBWS ecosystem: domain registry, tokens,
-DeFi, community finance, governance, NerdTV, and supporting infrastructure.
-Targets **Polygon** (Amoy testnet + mainnet). Solidity `0.8.24` (pragma
-`^0.8.20`), OpenZeppelin `^5.0`.
+> **⚠ Registry superseded.** `contracts/wave1/registry/`'s `PlugRegistry`
+> (flat `name.tld` + reputation score) is no longer the canonical domain
+> registry — the project has standardized on
+> [`contracts/dbws-registry-suite`](../dbws-registry-suite)'s six-registry
+> architecture instead (see that suite's `docs/MASTER_RUNBOOK.md`). Don't
+> deploy this suite's registry contracts as "the" registry.
+>
+> **Everything else here is still current.** Tokens, DeFi, community
+> finance, governance, NerdTV, and the rest of `wave1`/`wave2` are exactly
+> what Phase 4+ of the registry suite's runbook points to — this is that
+> work, already built and tested ahead of schedule.
+
+The full on-chain layer for the DBWS ecosystem: tokens, DeFi, community
+finance, governance, NerdTV, and supporting infrastructure (plus a
+now-superseded domain registry — see above). Targets **Polygon** (Amoy
+testnet + mainnet). Solidity `0.8.24` (pragma `^0.8.20`), OpenZeppelin
+`^5.0`.
 
 Everything here is built, compiled, and tested. What's **not** here yet is
 a mainnet deployment of everything — the contracts are split into two

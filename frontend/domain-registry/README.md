@@ -5,11 +5,21 @@ TLDs), talking directly to `PlugRegistry`/`PlugRegistrar` in
 [`contracts/dbws-suite`](../../contracts/dbws-suite) via ethers.js — no
 backend required for the core flows.
 
-> Runs on `contracts/dbws-suite`'s `PlugRegistry` (flat `name.tld` + a
-> built-in reputation score), not the ENS-style namehash-tree
+> **⚠ Stale — points at a now-superseded registry.** This frontend was wired
+> to `contracts/dbws-suite`'s flat-namespace `PlugRegistry`, which has since
+> been superseded by [`contracts/dbws-registry-suite`](../../contracts/dbws-registry-suite)'s
+> six-registry architecture (different constructor args, USDC-only fees, a
+> different `registerDomain` signature — see that suite's `PlugRegistry.sol`).
+> Rewiring this dashboard to the new suite is Phase 2c
+> ("Unified Dashboard — one frontend, six views") of
+> `contracts/dbws-registry-suite/docs/MASTER_RUNBOOK.md`, not yet started.
+> Everything below describes the current (stale) wiring.
+>
+> Originally ran on `contracts/dbws-suite`'s `PlugRegistry` (flat `name.tld` +
+> a built-in reputation score), not the ENS-style namehash-tree
 > `contracts/domain-registry` this frontend originally shipped against — that
-> suite is now superseded, see its README. Payment is in USDC or discounted
-> $PLUG (ERC-20, ETH `approve`/`transferFrom`), not native currency.
+> suite is superseded too, see its README. Payment is in USDC or discounted
+> $PLUG (ERC-20, `approve`/`transferFrom`), not native currency.
 
 ## Setup
 
