@@ -2,7 +2,7 @@ import { Gem, Menu, X } from "lucide-react";
 import { useState } from "react";
 
 const LINKS = [
-  { id: "marketplace", label: "The Atelier" },
+  { id: "marketplace", label: "The Red Room" },
   { id: "studio", label: "Become a Creator" },
   { id: "policy", label: "Trust & Compliance" },
 ];
@@ -22,9 +22,9 @@ export default function NavBar({ view, onNavigate, user, onOpenAuth }) {
           onClick={() => go("home")}
           className="flex items-center gap-2 font-display text-xl tracking-wide text-ivory"
         >
-          <Gem size={20} className="text-gold" strokeWidth={1.5} />
+          <Gem size={20} className="text-scarlet" strokeWidth={1.5} />
           <span>
-            Maison <span className="italic text-champagne">Muse</span>
+            Red Room <span className="italic text-crimson">Models</span>
           </span>
         </button>
 
@@ -34,7 +34,7 @@ export default function NavBar({ view, onNavigate, user, onOpenAuth }) {
               key={l.id}
               onClick={() => go(l.id)}
               className={`text-xs uppercase tracking-widest2 transition-colors ${
-                view === l.id ? "text-gold" : "text-ivory/70 hover:text-ivory"
+                view === l.id ? "text-scarlet" : "text-ivory/70 hover:text-ivory"
               }`}
             >
               {l.label}
@@ -48,12 +48,12 @@ export default function NavBar({ view, onNavigate, user, onOpenAuth }) {
               onClick={() => go(user.role === "creator" ? "studio" : "marketplace")}
               className="text-xs uppercase tracking-widest2 text-ivory/80"
             >
-              {user.name} · <span className="text-champagne">{user.role}</span>
+              {user.name} · <span className="text-crimson">{user.role}</span>
             </button>
           ) : (
             <button
               onClick={onOpenAuth}
-              className="rounded-sm border border-gold/50 px-4 py-2 text-xs uppercase tracking-widest2 text-gold transition-colors hover:bg-gold hover:text-ink"
+              className="rounded-sm border border-scarlet/50 px-4 py-2 text-xs uppercase tracking-widest2 text-scarlet transition-colors hover:bg-scarlet hover:text-ink"
             >
               Sign In
             </button>
@@ -81,7 +81,7 @@ export default function NavBar({ view, onNavigate, user, onOpenAuth }) {
               onOpenAuth();
               setMobileOpen(false);
             }}
-            className="mt-2 rounded-sm border border-gold/50 px-4 py-2 text-left text-xs uppercase tracking-widest2 text-gold"
+            className="mt-2 rounded-sm border border-scarlet/50 px-4 py-2 text-left text-xs uppercase tracking-widest2 text-scarlet"
           >
             {user ? `${user.name} · ${user.role}` : "Sign In"}
           </button>

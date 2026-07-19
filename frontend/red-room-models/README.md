@@ -1,6 +1,6 @@
-# Maison Muse
+# Red Room Models
 
-A luxury-positioned marketplace concept for licensing bespoke AI "muses" (personas)
+A luxury-positioned marketplace concept for licensing bespoke AI "models" (personas)
 and curated content packs to creators running AI-influencer accounts on platforms
 like Fanvue.
 
@@ -23,13 +23,13 @@ npm run dev
 
 ## Product model
 
-- **Muse (persona)** — a named AI character with a bio, style/category tags, and
+- **Model (persona)** — a named AI character with a bio, style/category tags, and
   two license tiers:
   - *Exclusive* — sold once, buyer gets sole rights, persona is retired from the
     marketplace.
   - *Shared* — non-exclusive, can be licensed to multiple buyers at a lower price.
-- **Content pack** — a pre-generated media collection from a given muse, sold as
-  a standalone download/usage license without transferring rights to the muse
+- **Content pack** — a pre-generated media collection from a given model, sold as
+  a standalone download/usage license without transferring rights to the model
   itself.
 
 ## Trust & Compliance (see `src/components/TrustPolicy.jsx`)

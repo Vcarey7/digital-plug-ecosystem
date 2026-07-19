@@ -11,7 +11,7 @@ body {
 }
 
 ::selection {
-  @apply bg-champagne/30 text-ivory;
+  @apply bg-crimson/30 text-ivory;
 }
 
 .text-shadow-lg {

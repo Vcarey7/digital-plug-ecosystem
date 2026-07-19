@@ -8,8 +8,8 @@ export default {
         panel: "#1e1b22",
         ivory: "#f6f1e7",
         parchment: "#ece4d3",
-        champagne: "#cda86a",
-        gold: "#d9b45b",
+        crimson: "#8f1d2c",
+        scarlet: "#d1263f",
         wine: "#5c1a2b",
       },
       fontFamily: {

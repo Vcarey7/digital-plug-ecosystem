@@ -29,10 +29,10 @@ export default function Marketplace({ onSelectPersona }) {
   return (
     <div className="mx-auto max-w-7xl px-6 py-14 lg:px-10">
       <div className="mb-10">
-        <p className="text-xs uppercase tracking-widest2 text-champagne">The Atelier</p>
+        <p className="text-xs uppercase tracking-widest2 text-crimson">The Red Room</p>
         <h1 className="mt-2 font-display text-4xl italic text-ivory">Browse the collection</h1>
         <p className="mt-2 max-w-2xl text-sm text-ivory/50">
-          Each muse is reviewed for rights, consent, and content standards before
+          Each model is reviewed for rights, consent, and content standards before
           it's listed. License a persona exclusively, share it, or buy a
           ready-made content pack.
         </p>
@@ -46,7 +46,7 @@ export default function Marketplace({ onSelectPersona }) {
               onClick={() => setCategory(c)}
               className={`rounded-full border px-4 py-1.5 text-xs uppercase tracking-widest2 transition-colors ${
                 category === c
-                  ? "border-gold bg-gold/10 text-gold"
+                  ? "border-scarlet bg-scarlet/10 text-scarlet"
                   : "border-white/10 text-ivory/60 hover:border-white/30"
               }`}
             >
@@ -61,7 +61,7 @@ export default function Marketplace({ onSelectPersona }) {
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search muses or styles"
+              placeholder="Search models or styles"
               className="bg-transparent text-sm text-ivory placeholder:text-ivory/30 outline-none"
             />
           </div>
@@ -79,7 +79,7 @@ export default function Marketplace({ onSelectPersona }) {
 
       {results.length === 0 ? (
         <p className="py-20 text-center text-sm text-ivory/40">
-          No muses match that search. Try another style or category.
+          No models match that search. Try another style or category.
         </p>
       ) : (
         <div className="grid grid-cols-2 gap-6 lg:grid-cols-4">

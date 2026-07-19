@@ -6,7 +6,7 @@ const CHECKLIST = [
   {
     key: "consent",
     label:
-      "This muse is either fully synthetic, or any real-person likeness used in training is backed by a documented, signed model release.",
+      "This model is either fully synthetic, or any real-person likeness used in training is backed by a documented, signed model release.",
   },
   {
     key: "noMinors",
@@ -52,10 +52,10 @@ export default function CreatorStudio() {
   if (submitted) {
     return (
       <div className="mx-auto max-w-xl px-6 py-24 text-center">
-        <CheckCircle2 size={40} className="mx-auto text-gold" strokeWidth={1.2} />
+        <CheckCircle2 size={40} className="mx-auto text-scarlet" strokeWidth={1.2} />
         <h1 className="mt-6 font-display text-3xl italic text-ivory">Submitted for review</h1>
         <p className="mt-3 text-sm text-ivory/60">
-          Thank you — <span className="text-champagne">{form.name}</span> has been queued for
+          Thank you — <span className="text-crimson">{form.name}</span> has been queued for
           curatorial and compliance review. Our team verifies rights, consent
           documentation, and content standards before anything is listed. You'll
           hear back within 48 hours.
@@ -73,9 +73,9 @@ export default function CreatorStudio() {
             });
             setChecks({});
           }}
-          className="mt-8 rounded-sm border border-gold/40 px-6 py-3 text-xs uppercase tracking-widest2 text-gold hover:bg-gold/10"
+          className="mt-8 rounded-sm border border-scarlet/40 px-6 py-3 text-xs uppercase tracking-widest2 text-scarlet hover:bg-scarlet/10"
         >
-          Submit another muse
+          Submit another model
         </button>
       </div>
     );
@@ -83,10 +83,10 @@ export default function CreatorStudio() {
 
   return (
     <div className="mx-auto max-w-3xl px-6 py-14 lg:px-10">
-      <p className="text-xs uppercase tracking-widest2 text-champagne">Creator Studio</p>
-      <h1 className="mt-2 font-display text-4xl italic text-ivory">List a new muse</h1>
+      <p className="text-xs uppercase tracking-widest2 text-crimson">Creator Studio</p>
+      <h1 className="mt-2 font-display text-4xl italic text-ivory">List a new model</h1>
       <p className="mt-2 text-sm text-ivory/50">
-        Every submission is reviewed by hand before it reaches the Atelier. Listings
+        Every submission is reviewed by hand before it reaches the Red Room. Listings
         that can't demonstrate consent, originality, and compliance are rejected.
       </p>
 
@@ -94,13 +94,13 @@ export default function CreatorStudio() {
         <div className="grid gap-6 sm:grid-cols-2">
           <div>
             <label className="mb-1 block text-xs uppercase tracking-widest2 text-ivory/40">
-              Muse name
+              Model name
             </label>
             <input
               value={form.name}
               onChange={update("name")}
               placeholder="e.g. Rosalind Faye"
-              className="w-full rounded-sm border border-white/10 bg-charcoal px-3 py-2 text-sm text-ivory outline-none focus:border-gold/60"
+              className="w-full rounded-sm border border-white/10 bg-charcoal px-3 py-2 text-sm text-ivory outline-none focus:border-scarlet/60"
             />
           </div>
           <div>
@@ -110,7 +110,7 @@ export default function CreatorStudio() {
             <select
               value={form.category}
               onChange={update("category")}
-              className="w-full rounded-sm border border-white/10 bg-charcoal px-3 py-2 text-sm text-ivory outline-none focus:border-gold/60"
+              className="w-full rounded-sm border border-white/10 bg-charcoal px-3 py-2 text-sm text-ivory outline-none focus:border-scarlet/60"
             >
               {CATEGORIES.map((c) => (
                 <option key={c} value={c}>
@@ -129,7 +129,7 @@ export default function CreatorStudio() {
             value={form.tags}
             onChange={update("tags")}
             placeholder="e.g. editorial, warm-tone, minimalist"
-            className="w-full rounded-sm border border-white/10 bg-charcoal px-3 py-2 text-sm text-ivory outline-none focus:border-gold/60"
+            className="w-full rounded-sm border border-white/10 bg-charcoal px-3 py-2 text-sm text-ivory outline-none focus:border-scarlet/60"
           />
         </div>
 
@@ -141,8 +141,8 @@ export default function CreatorStudio() {
             value={form.backstory}
             onChange={update("backstory")}
             rows={4}
-            placeholder="Describe the muse's aesthetic, tone, and intended use."
-            className="w-full rounded-sm border border-white/10 bg-charcoal px-3 py-2 text-sm text-ivory outline-none focus:border-gold/60"
+            placeholder="Describe the model's aesthetic, tone, and intended use."
+            className="w-full rounded-sm border border-white/10 bg-charcoal px-3 py-2 text-sm text-ivory outline-none focus:border-scarlet/60"
           />
         </div>
 
@@ -156,7 +156,7 @@ export default function CreatorStudio() {
               min="0"
               value={form.exclusivePrice}
               onChange={update("exclusivePrice")}
-              className="w-full rounded-sm border border-white/10 bg-charcoal px-3 py-2 text-sm text-ivory outline-none focus:border-gold/60"
+              className="w-full rounded-sm border border-white/10 bg-charcoal px-3 py-2 text-sm text-ivory outline-none focus:border-scarlet/60"
             />
           </div>
           <div>
@@ -168,7 +168,7 @@ export default function CreatorStudio() {
               min="0"
               value={form.sharedPrice}
               onChange={update("sharedPrice")}
-              className="w-full rounded-sm border border-white/10 bg-charcoal px-3 py-2 text-sm text-ivory outline-none focus:border-gold/60"
+              className="w-full rounded-sm border border-white/10 bg-charcoal px-3 py-2 text-sm text-ivory outline-none focus:border-scarlet/60"
             />
           </div>
         </div>
@@ -184,8 +184,8 @@ export default function CreatorStudio() {
           </div>
         </div>
 
-        <div className="rounded-sm border border-gold/20 bg-charcoal p-5">
-          <div className="mb-3 flex items-center gap-2 text-xs uppercase tracking-widest2 text-gold">
+        <div className="rounded-sm border border-scarlet/20 bg-charcoal p-5">
+          <div className="mb-3 flex items-center gap-2 text-xs uppercase tracking-widest2 text-scarlet">
             <ShieldAlert size={14} /> Compliance attestation
           </div>
           <div className="flex flex-col gap-3">
@@ -195,7 +195,7 @@ export default function CreatorStudio() {
                   type="checkbox"
                   checked={!!checks[c.key]}
                   onChange={(e) => setChecks((prev) => ({ ...prev, [c.key]: e.target.checked }))}
-                  className="mt-1 accent-gold"
+                  className="mt-1 accent-scarlet"
                 />
                 {c.label}
               </label>
@@ -207,10 +207,10 @@ export default function CreatorStudio() {
           type="submit"
           disabled={!canSubmit}
           className={`rounded-sm px-6 py-3 text-xs uppercase tracking-widest2 transition-colors ${
-            canSubmit ? "bg-gold text-ink hover:bg-champagne" : "cursor-not-allowed bg-white/5 text-ivory/30"
+            canSubmit ? "bg-scarlet text-ink hover:bg-crimson" : "cursor-not-allowed bg-white/5 text-ivory/30"
           }`}
         >
-          Submit for Atelier review
+          Submit for Red Room review
         </button>
       </form>
     </div>

@@ -2,7 +2,7 @@ export default function MonogramArt({ monogram, gradient, className = "", ratio 
   const [from, to] = gradient;
   return (
     <div
-      className={`relative overflow-hidden rounded-sm border border-gold/20 ${ratio} ${className}`}
+      className={`relative overflow-hidden rounded-sm border border-scarlet/20 ${ratio} ${className}`}
       style={{
         backgroundImage: `radial-gradient(120% 120% at 20% 15%, ${to}33 0%, transparent 55%), linear-gradient(160deg, ${from} 0%, ${to} 130%)`,
       }}

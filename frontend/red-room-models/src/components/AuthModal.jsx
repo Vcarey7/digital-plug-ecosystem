@@ -13,7 +13,7 @@ export default function AuthModal({ onClose, onAuthenticated }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 backdrop-blur-sm">
-      <div className="relative w-full max-w-md rounded-sm border border-gold/20 bg-charcoal p-8 shadow-2xl">
+      <div className="relative w-full max-w-md rounded-sm border border-scarlet/20 bg-charcoal p-8 shadow-2xl">
         <button
           onClick={onClose}
           className="absolute right-4 top-4 text-ivory/50 hover:text-ivory"
@@ -22,7 +22,7 @@ export default function AuthModal({ onClose, onAuthenticated }) {
         </button>
 
         <h2 className="font-display text-2xl text-ivory">
-          {mode === "signin" ? "Welcome back" : "Join the Atelier"}
+          {mode === "signin" ? "Welcome back" : "Join the Red Room"}
         </h2>
         <p className="mt-1 text-sm text-ivory/50">
           Demo authentication — no real account is created.
@@ -34,7 +34,7 @@ export default function AuthModal({ onClose, onAuthenticated }) {
               key={m}
               onClick={() => setMode(m)}
               className={`flex-1 rounded-sm py-2 text-xs uppercase tracking-widest2 transition-colors ${
-                mode === m ? "bg-gold text-ink" : "text-ivory/60"
+                mode === m ? "bg-scarlet text-ink" : "text-ivory/60"
               }`}
             >
               {m === "signin" ? "Sign In" : "Join"}
@@ -51,7 +51,7 @@ export default function AuthModal({ onClose, onAuthenticated }) {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Your name"
-              className="w-full rounded-sm border border-white/10 bg-ink px-3 py-2 text-sm text-ivory outline-none focus:border-gold/60"
+              className="w-full rounded-sm border border-white/10 bg-ink px-3 py-2 text-sm text-ivory outline-none focus:border-scarlet/60"
             />
           </div>
           <div>
@@ -61,7 +61,7 @@ export default function AuthModal({ onClose, onAuthenticated }) {
             <input
               type="email"
               placeholder="you@example.com"
-              className="w-full rounded-sm border border-white/10 bg-ink px-3 py-2 text-sm text-ivory outline-none focus:border-gold/60"
+              className="w-full rounded-sm border border-white/10 bg-ink px-3 py-2 text-sm text-ivory outline-none focus:border-scarlet/60"
             />
           </div>
 
@@ -78,7 +78,7 @@ export default function AuthModal({ onClose, onAuthenticated }) {
                     onClick={() => setRole(r)}
                     className={`flex-1 rounded-sm border py-2 text-xs uppercase tracking-widest2 ${
                       role === r
-                        ? "border-gold bg-gold/10 text-gold"
+                        ? "border-scarlet bg-scarlet/10 text-scarlet"
                         : "border-white/10 text-ivory/60"
                     }`}
                   >
@@ -95,7 +95,7 @@ export default function AuthModal({ onClose, onAuthenticated }) {
 
           <button
             type="submit"
-            className="mt-2 rounded-sm bg-gold py-3 text-xs uppercase tracking-widest2 text-ink transition-colors hover:bg-champagne"
+            className="mt-2 rounded-sm bg-scarlet py-3 text-xs uppercase tracking-widest2 text-ink transition-colors hover:bg-crimson"
           >
             Continue
           </button>

@@ -5,13 +5,13 @@ import PersonaCard from "./PersonaCard.jsx";
 const STEPS = [
   {
     icon: Wand2,
-    title: "Design or discover a muse",
-    body: "Commission a bespoke persona from a Maison Muse creator, or license one already curated in the atelier.",
+    title: "Design or discover a model",
+    body: "Commission a bespoke persona from a Red Room Models creator, or license one already curated in the Red Room.",
   },
   {
     icon: ShieldCheck,
     title: "Reviewed before it's listed",
-    body: "Every muse passes a rights, consent, and content-standards review before it ever reaches the marketplace.",
+    body: "Every model passes a rights, consent, and content-standards review before it ever reaches the marketplace.",
   },
   {
     icon: Sparkles,
@@ -37,31 +37,31 @@ export default function Home({ onNavigate, onSelectPersona }) {
           className="absolute inset-0 opacity-40"
           style={{
             backgroundImage:
-              "radial-gradient(60% 60% at 80% 0%, #5c1a2b55 0%, transparent 60%), radial-gradient(50% 50% at 10% 100%, #cda86a22 0%, transparent 60%)",
+              "radial-gradient(60% 60% at 80% 0%, #5c1a2b66 0%, transparent 60%), radial-gradient(50% 50% at 10% 100%, #d1263f22 0%, transparent 60%)",
           }}
         />
         <div className="relative mx-auto max-w-7xl px-6 py-24 lg:px-10 lg:py-32">
-          <p className="mb-5 text-xs uppercase tracking-widest2 text-champagne">
-            An atelier for the AI creator economy
+          <p className="mb-5 text-xs uppercase tracking-widest2 text-crimson">
+            A private address for the AI creator economy
           </p>
           <h1 className="max-w-3xl font-display text-5xl italic leading-tight text-ivory text-shadow-lg lg:text-7xl">
-            Bespoke muses, <span className="text-champagne">not stock avatars.</span>
+            Bespoke models, <span className="text-crimson">not stock avatars.</span>
           </h1>
           <p className="mt-6 max-w-xl text-base text-ivory/60 lg:text-lg">
-            Maison Muse is a curated marketplace for licensing AI personas and
-            ready-made content collections — crafted for creators building
+            Red Room Models is a curated marketplace for licensing AI personas
+            and ready-made content collections — crafted for creators building
             premium presences on Fanvue and beyond.
           </p>
           <div className="mt-10 flex flex-wrap gap-4">
             <button
               onClick={() => onNavigate("marketplace")}
-              className="flex items-center gap-2 rounded-sm bg-gold px-6 py-3 text-xs uppercase tracking-widest2 text-ink transition-colors hover:bg-champagne"
+              className="flex items-center gap-2 rounded-sm bg-scarlet px-6 py-3 text-xs uppercase tracking-widest2 text-ink transition-colors hover:bg-crimson"
             >
-              Explore the Atelier <ArrowRight size={14} />
+              Enter the Red Room <ArrowRight size={14} />
             </button>
             <button
               onClick={() => onNavigate("studio")}
-              className="rounded-sm border border-gold/40 px-6 py-3 text-xs uppercase tracking-widest2 text-gold transition-colors hover:bg-gold/10"
+              className="rounded-sm border border-scarlet/40 px-6 py-3 text-xs uppercase tracking-widest2 text-scarlet transition-colors hover:bg-scarlet/10"
             >
               Become a Creator
             </button>
@@ -85,10 +85,10 @@ export default function Home({ onNavigate, onSelectPersona }) {
           {STEPS.map((s, i) => (
             <div key={s.title} className="rounded-sm border border-white/10 p-6">
               <div className="mb-4 flex items-center gap-3">
-                <span className="flex h-9 w-9 items-center justify-center rounded-full border border-gold/40 text-xs text-gold">
+                <span className="flex h-9 w-9 items-center justify-center rounded-full border border-scarlet/40 text-xs text-scarlet">
                   {i + 1}
                 </span>
-                <s.icon size={20} className="text-champagne" strokeWidth={1.5} />
+                <s.icon size={20} className="text-crimson" strokeWidth={1.5} />
               </div>
               <h3 className="font-display text-lg text-ivory">{s.title}</h3>
               <p className="mt-2 text-sm text-ivory/50">{s.body}</p>
@@ -100,10 +100,10 @@ export default function Home({ onNavigate, onSelectPersona }) {
       <section className="border-t border-white/10 bg-charcoal">
         <div className="mx-auto max-w-7xl px-6 py-20 lg:px-10">
           <div className="mb-10 flex items-end justify-between">
-            <h2 className="font-display text-3xl italic text-ivory">Featured muses</h2>
+            <h2 className="font-display text-3xl italic text-ivory">Featured models</h2>
             <button
               onClick={() => onNavigate("marketplace")}
-              className="hidden text-xs uppercase tracking-widest2 text-gold sm:flex items-center gap-1"
+              className="hidden text-xs uppercase tracking-widest2 text-scarlet sm:flex items-center gap-1"
             >
               View all <ArrowRight size={12} />
             </button>

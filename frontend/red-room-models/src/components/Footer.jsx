@@ -7,11 +7,11 @@ export default function Footer({ onNavigate }) {
         <div className="flex flex-col gap-8 md:flex-row md:justify-between">
           <div className="max-w-sm">
             <div className="flex items-center gap-2 font-display text-lg text-ivory">
-              <Gem size={16} className="text-gold" strokeWidth={1.5} />
-              Maison <span className="italic text-champagne">Muse</span>
+              <Gem size={16} className="text-scarlet" strokeWidth={1.5} />
+              Red Room <span className="italic text-crimson">Models</span>
             </div>
             <p className="mt-3 text-sm text-ivory/50">
-              An atelier marketplace for bespoke AI muses and curated content
+              A private marketplace for bespoke AI models and curated content
               collections, built for creators launching on Fanvue and beyond.
             </p>
           </div>
@@ -21,10 +21,10 @@ export default function Footer({ onNavigate }) {
               <div className="mb-3 text-xs uppercase tracking-widest2 text-ivory/40">
                 Marketplace
               </div>
-              <button onClick={() => onNavigate("marketplace")} className="block py-1 text-ivory/70 hover:text-gold">
-                Browse Muses
+              <button onClick={() => onNavigate("marketplace")} className="block py-1 text-ivory/70 hover:text-scarlet">
+                Browse Models
               </button>
-              <button onClick={() => onNavigate("studio")} className="block py-1 text-ivory/70 hover:text-gold">
+              <button onClick={() => onNavigate("studio")} className="block py-1 text-ivory/70 hover:text-scarlet">
                 Become a Creator
               </button>
             </div>
@@ -32,7 +32,7 @@ export default function Footer({ onNavigate }) {
               <div className="mb-3 text-xs uppercase tracking-widest2 text-ivory/40">
                 Trust
               </div>
-              <button onClick={() => onNavigate("policy")} className="block py-1 text-ivory/70 hover:text-gold">
+              <button onClick={() => onNavigate("policy")} className="block py-1 text-ivory/70 hover:text-scarlet">
                 Compliance Standards
               </button>
             </div>
@@ -40,7 +40,7 @@ export default function Footer({ onNavigate }) {
         </div>
 
         <div className="mt-10 border-t border-white/5 pt-6 text-xs text-ivory/30">
-          © {new Date().getFullYear()} Maison Muse. Concept demo — 18+ platform,
+          © {new Date().getFullYear()} Red Room Models. Concept demo — 18+ platform,
           no real content is generated or sold here.
         </div>
       </div>

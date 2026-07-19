@@ -8,7 +8,7 @@ export const PERSONAS = [
     category: "Éditorial",
     monogram: "AV",
     gradient: ["#3a2e39", "#c9a769"],
-    tagline: "Warm-lit editorial muse with a quiet, expensive confidence.",
+    tagline: "Warm-lit editorial model with a quiet, expensive confidence.",
     backstory:
       "Aurelia reads like the last page of a fashion month spread — unhurried, sun-warmed, deliberate. Built for brands that want stillness to feel like status.",
     tags: ["high-fashion", "warm-tone", "minimalist"],
@@ -24,7 +24,7 @@ export const PERSONAS = [
         title: "The Riviera Edit",
         mediaCount: 42,
         price: 180,
-        description: "A sun-drenched coastal set — resortwear, terraces, gold hour.",
+        description: "A sun-drenched coastal set — resortwear, terraces, golden hour.",
       },
       {
         id: "av-studio-portraits",
@@ -38,11 +38,11 @@ export const PERSONAS = [
   {
     id: "seraphine-cole",
     name: "Séraphine Cole",
-    house: "Maison Cole",
+    house: "House Cole",
     category: "Noir",
     monogram: "SC",
     gradient: ["#141018", "#5c1a2b"],
-    tagline: "Low-light, high-contrast. A muse for after-dark storytelling.",
+    tagline: "Low-light, high-contrast. A model for after-dark storytelling.",
     backstory:
       "Séraphine lives in shadow and candlelight. Cast for brands that want restraint, mystery, and a single striking frame rather than a hundred loud ones.",
     tags: ["noir", "moody", "cinematic"],
@@ -99,13 +99,13 @@ export const PERSONAS = [
   {
     id: "odessa-marchetti",
     name: "Odessa Marchetti",
-    house: "Maison Marchetti",
+    house: "Studio Marchetti",
     category: "Couture",
     monogram: "OM",
     gradient: ["#1b1024", "#8a5fb0"],
     tagline: "Runway-built. Structured silhouettes, sculptural posing.",
     backstory:
-      "Odessa was designed frame-by-frame off couture runway references — precise posture, architectural styling. A muse for brands selling craft, not casualness.",
+      "Odessa was designed frame-by-frame off couture runway references — precise posture, architectural styling. A model for brands selling craft, not casualness.",
     tags: ["couture", "structured", "runway"],
     rating: 5.0,
     reviews: 41,
@@ -115,8 +115,8 @@ export const PERSONAS = [
     },
     contentPacks: [
       {
-        id: "om-atelier-line",
-        title: "Atelier Line",
+        id: "om-studio-line",
+        title: "Studio Line",
         mediaCount: 28,
         price: 200,
         description: "Sculptural silhouettes against raw concrete and steel.",
@@ -180,7 +180,7 @@ export const PERSONAS = [
   {
     id: "marlowe-sinclair",
     name: "Marlowe Sinclair",
-    house: "Maison Sinclair",
+    house: "Parlour Sinclair",
     category: "Noir",
     monogram: "MS",
     gradient: ["#1a1414", "#7a2e2e"],

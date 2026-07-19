@@ -29,9 +29,9 @@ export default function PersonaDetail({ personaId, onBack, onCheckout }) {
   if (!persona) {
     return (
       <div className="mx-auto max-w-3xl px-6 py-24 text-center">
-        <p className="text-ivory/60">That muse could not be found.</p>
-        <button onClick={onBack} className="mt-4 text-gold underline">
-          Back to the Atelier
+        <p className="text-ivory/60">That model could not be found.</p>
+        <button onClick={onBack} className="mt-4 text-scarlet underline">
+          Back to the Red Room
         </button>
       </div>
     );
@@ -45,7 +45,7 @@ export default function PersonaDetail({ personaId, onBack, onCheckout }) {
         onClick={onBack}
         className="mb-8 flex items-center gap-2 text-xs uppercase tracking-widest2 text-ivory/50 hover:text-ivory"
       >
-        <ArrowLeft size={14} /> Back to the Atelier
+        <ArrowLeft size={14} /> Back to the Red Room
       </button>
 
       <div className="grid gap-12 lg:grid-cols-5">
@@ -54,12 +54,12 @@ export default function PersonaDetail({ personaId, onBack, onCheckout }) {
         </div>
 
         <div className="lg:col-span-3">
-          <span className="text-xs uppercase tracking-widest2 text-champagne">
+          <span className="text-xs uppercase tracking-widest2 text-crimson">
             {persona.category} · {persona.house}
           </span>
           <h1 className="mt-2 font-display text-4xl italic text-ivory">{persona.name}</h1>
           <div className="mt-2 flex items-center gap-2 text-sm text-ivory/50">
-            <Star size={14} className="text-champagne" fill="currentColor" />
+            <Star size={14} className="text-crimson" fill="currentColor" />
             {persona.rating} · {persona.reviews} licenses issued
           </div>
           <p className="mt-4 text-ivory/70">{persona.backstory}</p>
@@ -72,7 +72,7 @@ export default function PersonaDetail({ personaId, onBack, onCheckout }) {
             ))}
           </div>
 
-          <h2 className="mt-10 font-display text-xl text-ivory">License this muse</h2>
+          <h2 className="mt-10 font-display text-xl text-ivory">License this model</h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             <button
               disabled={!persona.licenses.exclusive.available}
@@ -81,14 +81,14 @@ export default function PersonaDetail({ personaId, onBack, onCheckout }) {
                 !persona.licenses.exclusive.available
                   ? "cursor-not-allowed border-white/5 opacity-40"
                   : tier === "exclusive"
-                  ? "border-gold bg-gold/10"
+                  ? "border-scarlet bg-scarlet/10"
                   : "border-white/10 hover:border-white/30"
               }`}
             >
               <div className="flex items-center justify-between">
                 <span className="text-xs uppercase tracking-widest2 text-ivory/60">Exclusive</span>
                 {!persona.licenses.exclusive.available && <Lock size={14} className="text-ivory/40" />}
-                {tier === "exclusive" && <Check size={14} className="text-gold" />}
+                {tier === "exclusive" && <Check size={14} className="text-scarlet" />}
               </div>
               <p className="mt-2 font-display text-2xl text-ivory">
                 ${persona.licenses.exclusive.price.toLocaleString()}
@@ -103,12 +103,12 @@ export default function PersonaDetail({ personaId, onBack, onCheckout }) {
             <button
               onClick={() => setTier(tier === "shared" ? null : "shared")}
               className={`rounded-sm border p-4 text-left transition-colors ${
-                tier === "shared" ? "border-gold bg-gold/10" : "border-white/10 hover:border-white/30"
+                tier === "shared" ? "border-scarlet bg-scarlet/10" : "border-white/10 hover:border-white/30"
               }`}
             >
               <div className="flex items-center justify-between">
                 <span className="text-xs uppercase tracking-widest2 text-ivory/60">Shared</span>
-                {tier === "shared" && <Check size={14} className="text-gold" />}
+                {tier === "shared" && <Check size={14} className="text-scarlet" />}
               </div>
               <p className="mt-2 font-display text-2xl text-ivory">
                 ${persona.licenses.shared.price.toLocaleString()}
@@ -128,7 +128,7 @@ export default function PersonaDetail({ personaId, onBack, onCheckout }) {
                   key={pack.id}
                   onClick={() => togglePack(pack.id)}
                   className={`flex items-center justify-between rounded-sm border p-4 text-left transition-colors ${
-                    active ? "border-gold bg-gold/10" : "border-white/10 hover:border-white/30"
+                    active ? "border-scarlet bg-scarlet/10" : "border-white/10 hover:border-white/30"
                   }`}
                 >
                   <div>
@@ -138,8 +138,8 @@ export default function PersonaDetail({ personaId, onBack, onCheckout }) {
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="text-sm text-gold">${pack.price}</span>
-                    {active && <Check size={14} className="text-gold" />}
+                    <span className="text-sm text-scarlet">${pack.price}</span>
+                    {active && <Check size={14} className="text-scarlet" />}
                   </div>
                 </button>
               );
@@ -156,11 +156,11 @@ export default function PersonaDetail({ personaId, onBack, onCheckout }) {
               onClick={() => onCheckout({ personaId, tier, packIds: [...selectedPacks] })}
               className={`rounded-sm px-6 py-3 text-xs uppercase tracking-widest2 transition-colors ${
                 canCheckout
-                  ? "bg-gold text-ink hover:bg-champagne"
+                  ? "bg-scarlet text-ink hover:bg-crimson"
                   : "cursor-not-allowed bg-white/5 text-ivory/30"
               }`}
             >
-              Reserve this muse
+              Reserve this model
             </button>
           </div>
         </div>

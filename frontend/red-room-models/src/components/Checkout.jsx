@@ -20,8 +20,8 @@ export default function Checkout({ order, onBack, onNavigate }) {
     return (
       <div className="mx-auto max-w-xl px-6 py-24 text-center">
         <p className="text-ivory/60">Nothing to check out yet.</p>
-        <button onClick={() => onNavigate("marketplace")} className="mt-4 text-gold underline">
-          Browse the Atelier
+        <button onClick={() => onNavigate("marketplace")} className="mt-4 text-scarlet underline">
+          Browse the Red Room
         </button>
       </div>
     );
@@ -34,14 +34,14 @@ export default function Checkout({ order, onBack, onNavigate }) {
   if (confirmed) {
     return (
       <div className="mx-auto max-w-xl px-6 py-24 text-center">
-        <BadgeCheck size={40} className="mx-auto text-gold" strokeWidth={1.2} />
+        <BadgeCheck size={40} className="mx-auto text-scarlet" strokeWidth={1.2} />
         <h1 className="mt-6 font-display text-3xl italic text-ivory">License confirmed</h1>
         <p className="mt-3 text-sm text-ivory/60">
-          Your certificate for <span className="text-champagne">{persona.name}</span> has been issued.
+          Your certificate for <span className="text-crimson">{persona.name}</span> has been issued.
         </p>
-        <div className="mt-6 rounded-sm border border-gold/30 bg-charcoal p-6 text-left">
+        <div className="mt-6 rounded-sm border border-scarlet/30 bg-charcoal p-6 text-left">
           <p className="text-xs uppercase tracking-widest2 text-ivory/40">Certificate ID</p>
-          <p className="mt-1 font-display text-xl text-gold">{certId}</p>
+          <p className="mt-1 font-display text-xl text-scarlet">{certId}</p>
           {order.tier && (
             <p className="mt-3 text-sm text-ivory/60">
               {order.tier === "exclusive" ? "Exclusive" : "Shared"} license — {persona.name}
@@ -55,9 +55,9 @@ export default function Checkout({ order, onBack, onNavigate }) {
         </div>
         <button
           onClick={() => onNavigate("marketplace")}
-          className="mt-8 rounded-sm border border-gold/40 px-6 py-3 text-xs uppercase tracking-widest2 text-gold hover:bg-gold/10"
+          className="mt-8 rounded-sm border border-scarlet/40 px-6 py-3 text-xs uppercase tracking-widest2 text-scarlet hover:bg-scarlet/10"
         >
-          Back to the Atelier
+          Back to the Red Room
         </button>
       </div>
     );
@@ -94,7 +94,7 @@ export default function Checkout({ order, onBack, onNavigate }) {
         </div>
         <div className="mt-4 flex justify-between border-t border-white/10 pt-4">
           <span className="text-ivory">Total</span>
-          <span className="font-display text-xl text-gold">${total.toLocaleString()}</span>
+          <span className="font-display text-xl text-scarlet">${total.toLocaleString()}</span>
         </div>
       </div>
 
@@ -103,15 +103,15 @@ export default function Checkout({ order, onBack, onNavigate }) {
         <div className="grid gap-4 sm:grid-cols-2">
           <input
             placeholder="Card number"
-            className="sm:col-span-2 rounded-sm border border-white/10 bg-charcoal px-3 py-2 text-sm text-ivory outline-none focus:border-gold/60"
+            className="sm:col-span-2 rounded-sm border border-white/10 bg-charcoal px-3 py-2 text-sm text-ivory outline-none focus:border-scarlet/60"
           />
           <input
             placeholder="MM / YY"
-            className="rounded-sm border border-white/10 bg-charcoal px-3 py-2 text-sm text-ivory outline-none focus:border-gold/60"
+            className="rounded-sm border border-white/10 bg-charcoal px-3 py-2 text-sm text-ivory outline-none focus:border-scarlet/60"
           />
           <input
             placeholder="CVC"
-            className="rounded-sm border border-white/10 bg-charcoal px-3 py-2 text-sm text-ivory outline-none focus:border-gold/60"
+            className="rounded-sm border border-white/10 bg-charcoal px-3 py-2 text-sm text-ivory outline-none focus:border-scarlet/60"
           />
         </div>
         <p className="mt-2 text-xs text-ivory/30">Demo checkout — no real payment is processed.</p>
@@ -122,16 +122,16 @@ export default function Checkout({ order, onBack, onNavigate }) {
           type="checkbox"
           checked={agreed}
           onChange={(e) => setAgreed(e.target.checked)}
-          className="mt-1 accent-gold"
+          className="mt-1 accent-scarlet"
         />
-        I agree to the license terms and Maison Muse's Trust & Compliance standards.
+        I agree to the license terms and Red Room Models' Trust & Compliance standards.
       </label>
 
       <button
         disabled={!agreed}
         onClick={() => setConfirmed(true)}
         className={`mt-6 w-full rounded-sm py-3 text-xs uppercase tracking-widest2 transition-colors ${
-          agreed ? "bg-gold text-ink hover:bg-champagne" : "cursor-not-allowed bg-white/5 text-ivory/30"
+          agreed ? "bg-scarlet text-ink hover:bg-crimson" : "cursor-not-allowed bg-white/5 text-ivory/30"
         }`}
       >
         Confirm license — ${total.toLocaleString()}
