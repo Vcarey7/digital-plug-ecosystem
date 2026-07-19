@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-ink text-ivory font-body antialiased;
+}
+
+::selection {
+  @apply bg-champagne/30 text-ivory;
+}
+
+.text-shadow-lg {
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.45);
+}
