@@ -1,0 +1,11 @@
+{
+  "name": "digital-plug-ecosystem",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "npm --prefix frontend/expense-ledger run dev --",
+    "build": "npm --prefix frontend/expense-ledger run build --",
+    "preview": "npm --prefix frontend/expense-ledger run preview --",
+    "install:apps": "npm --prefix frontend/expense-ledger install"
+  }
+}
