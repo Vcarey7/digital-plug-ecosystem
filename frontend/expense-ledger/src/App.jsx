@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Calculator, Clock, ReceiptText } from "lucide-react";
+import { Calculator, Clock, CreditCard, LogOut, ReceiptText } from "lucide-react";
 import ExpenseTracker from "./ExpenseTracker.jsx";
 import IncomeLedger from "./IncomeLedger.jsx";
 import PayrollTracker from "./PayrollTracker.jsx";
+import { useAuth } from "./lib/AuthProvider.jsx";
+import { supabase } from "./lib/supabaseClient.js";
 
 const APPS = [
   {
@@ -38,6 +40,27 @@ function getInitialApp() {
 
 export default function App() {
   const [activeApp, setActiveApp] = useState(getInitialApp);
+  const { user, signOut } = useAuth();
+  const [openingBilling, setOpeningBilling] = useState(false);
+
+  const openBillingPortal = async () => {
+    setOpeningBilling(true);
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      const res = await fetch("/api/create-portal-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
+      });
+      const body = await res.json();
+      if (!res.ok) throw new Error(body.error || "Could not open billing portal.");
+      window.location.href = body.url;
+    } catch (e) {
+      console.error(e);
+      setOpeningBilling(false);
+    }
+  };
 
   useEffect(() => {
     const onHashChange = () => {
@@ -89,6 +112,19 @@ export default function App() {
                 </button>
               );
             })}
+          </div>
+          <div className="flex items-center justify-end gap-4 text-xs text-[#8A8F98]">
+            <span className="hidden sm:inline">{user?.email}</span>
+            <button
+              onClick={openBillingPortal}
+              disabled={openingBilling}
+              className="flex items-center gap-1.5 uppercase tracking-widest hover:text-[#EDE7D8] disabled:opacity-50"
+            >
+              <CreditCard size={14} /> Billing
+            </button>
+            <button onClick={signOut} className="flex items-center gap-1.5 uppercase tracking-widest hover:text-[#EDE7D8]">
+              <LogOut size={14} /> Sign out
+            </button>
           </div>
         </div>
       </nav>
