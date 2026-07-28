@@ -26,7 +26,13 @@ export default function PersonaCard({ persona, onSelect }) {
           <p className="text-xs text-ivory/40">{persona.house}</p>
         </div>
         <span className="flex items-center gap-1 text-xs text-crimson">
-          <Star size={12} fill="currentColor" /> {persona.rating}
+          {persona.rating ? (
+            <>
+              <Star size={12} fill="currentColor" /> {persona.rating}
+            </>
+          ) : (
+            <span className="uppercase tracking-widest2 text-[10px]">New</span>
+          )}
         </span>
       </div>
       <p className="mt-1 text-xs text-ivory/50 line-clamp-2">{persona.tagline}</p>

@@ -1,5 +1,4 @@
 import { ShieldCheck, Sparkles, Wand2, ArrowRight } from "lucide-react";
-import { PERSONAS } from "../data/mockData.js";
 import PersonaCard from "./PersonaCard.jsx";
 
 const STEPS = [
@@ -27,8 +26,8 @@ const TRUST_STRIP = [
   "Fanvue-ready licensing",
 ];
 
-export default function Home({ onNavigate, onSelectPersona }) {
-  const featured = PERSONAS.slice(0, 4);
+export default function Home({ onNavigate, onSelectPersona, models }) {
+  const featured = models.slice(0, 4);
 
   return (
     <div>

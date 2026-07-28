@@ -232,5 +232,3 @@ export const PERSONAS = [
     ],
   },
 ];
-
-export const findPersona = (id) => PERSONAS.find((p) => p.id === id);

@@ -1,21 +1,21 @@
 import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
-import { CATEGORIES, PERSONAS } from "../data/mockData.js";
+import { CATEGORIES } from "../data/mockData.js";
 import PersonaCard from "./PersonaCard.jsx";
 
 const SORTS = {
-  featured: (a, b) => b.rating - a.rating,
+  featured: (a, b) => (b.rating || 0) - (a.rating || 0),
   "price-asc": (a, b) => a.licenses.shared.price - b.licenses.shared.price,
   "price-desc": (a, b) => b.licenses.shared.price - a.licenses.shared.price,
 };
 
-export default function Marketplace({ onSelectPersona }) {
+export default function Marketplace({ onSelectPersona, models }) {
   const [category, setCategory] = useState("All");
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState("featured");
 
   const results = useMemo(() => {
-    return PERSONAS.filter((p) => {
+    return models.filter((p) => {
       const matchesCategory = category === "All" || p.category === category;
       const q = query.trim().toLowerCase();
       const matchesQuery =
@@ -24,7 +24,7 @@ export default function Marketplace({ onSelectPersona }) {
         p.tags.some((t) => t.toLowerCase().includes(q));
       return matchesCategory && matchesQuery;
     }).sort(SORTS[sort]);
-  }, [category, query, sort]);
+  }, [models, category, query, sort]);
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-14 lg:px-10">

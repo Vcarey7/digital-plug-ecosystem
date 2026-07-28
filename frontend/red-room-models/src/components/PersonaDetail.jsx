@@ -1,10 +1,9 @@
 import { useMemo, useState } from "react";
 import { ArrowLeft, Check, Lock, Star } from "lucide-react";
-import { findPersona } from "../data/mockData.js";
 import MonogramArt from "./MonogramArt.jsx";
 
-export default function PersonaDetail({ personaId, onBack, onCheckout }) {
-  const persona = findPersona(personaId);
+export default function PersonaDetail({ personaId, findModel, onBack, onCheckout }) {
+  const persona = findModel(personaId);
   const [tier, setTier] = useState(null);
   const [selectedPacks, setSelectedPacks] = useState(new Set());
 
@@ -59,8 +58,16 @@ export default function PersonaDetail({ personaId, onBack, onCheckout }) {
           </span>
           <h1 className="mt-2 font-display text-4xl italic text-ivory">{persona.name}</h1>
           <div className="mt-2 flex items-center gap-2 text-sm text-ivory/50">
-            <Star size={14} className="text-crimson" fill="currentColor" />
-            {persona.rating} · {persona.reviews} licenses issued
+            {persona.rating ? (
+              <>
+                <Star size={14} className="text-crimson" fill="currentColor" />
+                {persona.rating} · {persona.reviews} licenses issued
+              </>
+            ) : (
+              <span className="uppercase tracking-widest2 text-xs text-crimson">
+                New to the Red Room
+              </span>
+            )}
           </div>
           <p className="mt-4 text-ivory/70">{persona.backstory}</p>
 
@@ -114,11 +121,15 @@ export default function PersonaDetail({ personaId, onBack, onCheckout }) {
                 ${persona.licenses.shared.price.toLocaleString()}
               </p>
               <p className="mt-1 text-xs text-ivory/40">
-                Non-exclusive. Already licensed {persona.licenses.shared.licensedCount} times.
+                {persona.licenses.shared.licensedCount > 0
+                  ? `Non-exclusive. Already licensed ${persona.licenses.shared.licensedCount} times.`
+                  : "Non-exclusive. Not yet licensed."}
               </p>
             </button>
           </div>
 
+          {persona.contentPacks.length > 0 && (
+          <>
           <h2 className="mt-10 font-display text-xl text-ivory">Content packs</h2>
           <div className="mt-4 flex flex-col gap-3">
             {persona.contentPacks.map((pack) => {
@@ -145,6 +156,8 @@ export default function PersonaDetail({ personaId, onBack, onCheckout }) {
               );
             })}
           </div>
+          </>
+          )}
 
           <div className="mt-10 flex items-center justify-between rounded-sm border border-white/10 p-5">
             <div>

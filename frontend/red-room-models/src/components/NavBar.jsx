@@ -1,4 +1,4 @@
-import { Gem, Menu, X } from "lucide-react";
+import { Gem, LogOut, Menu, X } from "lucide-react";
 import { useState } from "react";
 
 const LINKS = [
@@ -7,8 +7,12 @@ const LINKS = [
   { id: "policy", label: "Trust & Compliance" },
 ];
 
-export default function NavBar({ view, onNavigate, user, onOpenAuth }) {
+export default function NavBar({ view, onNavigate, auth, onOpenAuth }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const displayName = auth.profile?.display_name || auth.user?.email;
+  const role = auth.profile?.role;
+
+  const links = role === "creator" ? [...LINKS, { id: "my-models", label: "My Models" }] : LINKS;
 
   const go = (id) => {
     onNavigate(id);
@@ -29,7 +33,7 @@ export default function NavBar({ view, onNavigate, user, onOpenAuth }) {
         </button>
 
         <nav className="hidden items-center gap-8 md:flex">
-          {LINKS.map((l) => (
+          {links.map((l) => (
             <button
               key={l.id}
               onClick={() => go(l.id)}
@@ -43,13 +47,19 @@ export default function NavBar({ view, onNavigate, user, onOpenAuth }) {
         </nav>
 
         <div className="hidden items-center gap-4 md:flex">
-          {user ? (
-            <button
-              onClick={() => go(user.role === "creator" ? "studio" : "marketplace")}
-              className="text-xs uppercase tracking-widest2 text-ivory/80"
-            >
-              {user.name} · <span className="text-crimson">{user.role}</span>
-            </button>
+          {auth.user ? (
+            <div className="flex items-center gap-3">
+              <span className="text-xs uppercase tracking-widest2 text-ivory/80">
+                {displayName} {role && <span className="text-crimson">· {role}</span>}
+              </span>
+              <button
+                onClick={() => auth.signOut()}
+                title="Sign out"
+                className="text-ivory/50 hover:text-scarlet"
+              >
+                <LogOut size={16} />
+              </button>
+            </div>
           ) : (
             <button
               onClick={onOpenAuth}
@@ -67,7 +77,7 @@ export default function NavBar({ view, onNavigate, user, onOpenAuth }) {
 
       {mobileOpen && (
         <div className="flex flex-col gap-1 border-t border-white/10 px-6 py-4 md:hidden">
-          {LINKS.map((l) => (
+          {links.map((l) => (
             <button
               key={l.id}
               onClick={() => go(l.id)}
@@ -76,15 +86,27 @@ export default function NavBar({ view, onNavigate, user, onOpenAuth }) {
               {l.label}
             </button>
           ))}
-          <button
-            onClick={() => {
-              onOpenAuth();
-              setMobileOpen(false);
-            }}
-            className="mt-2 rounded-sm border border-scarlet/50 px-4 py-2 text-left text-xs uppercase tracking-widest2 text-scarlet"
-          >
-            {user ? `${user.name} · ${user.role}` : "Sign In"}
-          </button>
+          {auth.user ? (
+            <button
+              onClick={() => {
+                auth.signOut();
+                setMobileOpen(false);
+              }}
+              className="mt-2 rounded-sm border border-scarlet/50 px-4 py-2 text-left text-xs uppercase tracking-widest2 text-scarlet"
+            >
+              Sign out ({displayName})
+            </button>
+          ) : (
+            <button
+              onClick={() => {
+                onOpenAuth();
+                setMobileOpen(false);
+              }}
+              className="mt-2 rounded-sm border border-scarlet/50 px-4 py-2 text-left text-xs uppercase tracking-widest2 text-scarlet"
+            >
+              Sign In
+            </button>
+          )}
         </div>
       )}
     </header>

@@ -1,14 +1,16 @@
 import { useMemo, useState } from "react";
 import { BadgeCheck, ArrowLeft } from "lucide-react";
-import { findPersona } from "../data/mockData.js";
+import { isSupabaseConfigured, supabase } from "../lib/supabaseClient.js";
 
 const genCertId = () =>
-  `MM-${Math.random().toString(36).slice(2, 6).toUpperCase()}-${Date.now().toString().slice(-5)}`;
+  `RR-${Math.random().toString(36).slice(2, 6).toUpperCase()}-${Date.now().toString().slice(-5)}`;
 
-export default function Checkout({ order, onBack, onNavigate }) {
-  const persona = order ? findPersona(order.personaId) : null;
+export default function Checkout({ order, auth, findModel, onBack, onNavigate }) {
+  const persona = order ? findModel(order.personaId) : null;
   const [agreed, setAgreed] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState("");
   const [certId] = useState(genCertId);
 
   const packs = useMemo(() => {
@@ -127,14 +129,46 @@ export default function Checkout({ order, onBack, onNavigate }) {
         I agree to the license terms and Red Room Models' Trust & Compliance standards.
       </label>
 
+      {!auth.user && isSupabaseConfigured && (
+        <p className="mt-3 text-xs text-ivory/40">
+          Sign in first if you'd like this license saved to your account — otherwise
+          it'll only be confirmed on-screen.
+        </p>
+      )}
+      {saveError && <p className="mt-3 text-xs text-scarlet">{saveError}</p>}
+
       <button
-        disabled={!agreed}
-        onClick={() => setConfirmed(true)}
+        disabled={!agreed || saving}
+        onClick={async () => {
+          if (isSupabaseConfigured && auth.user) {
+            setSaving(true);
+            setSaveError("");
+            const { error } = await supabase.from("orders").insert({
+              buyer_id: auth.user.id,
+              model_id: String(persona.id),
+              model_name: persona.name,
+              tier: order.tier || null,
+              pack_titles: packs.map((p) => p.title),
+              total,
+              certificate_id: certId,
+            });
+            if (error) {
+              setSaveError(error.message);
+              setSaving(false);
+              return;
+            }
+            if (order.tier === "exclusive" && persona.source === "live") {
+              await supabase.rpc("purchase_exclusive", { target_model_id: persona.id });
+            }
+            setSaving(false);
+          }
+          setConfirmed(true);
+        }}
         className={`mt-6 w-full rounded-sm py-3 text-xs uppercase tracking-widest2 transition-colors ${
-          agreed ? "bg-scarlet text-ink hover:bg-crimson" : "cursor-not-allowed bg-white/5 text-ivory/30"
+          agreed && !saving ? "bg-scarlet text-ink hover:bg-crimson" : "cursor-not-allowed bg-white/5 text-ivory/30"
         }`}
       >
-        Confirm license — ${total.toLocaleString()}
+        {saving ? "Confirming…" : `Confirm license — $${total.toLocaleString()}`}
       </button>
     </div>
   );
