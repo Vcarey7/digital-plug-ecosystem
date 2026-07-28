@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { ethers } from 'ethers';
-import { Copyright, Loader2, PlusCircle, FileSignature } from 'lucide-react';
+import { Copyright, Loader2, PlusCircle, FileSignature, ChevronDown, ChevronUp } from 'lucide-react';
 import { useWeb3 } from '../contexts/Web3Context';
 import { useNotification } from '../contexts/NotificationContext';
 import ConnectPrompt from '../components/shared/ConnectPrompt';
@@ -15,6 +15,9 @@ export default function IPRegistryView() {
   const [assets, setAssets] = useState(null);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [expandedId, setExpandedId] = useState(null);
+  const [licensesById, setLicensesById] = useState({});
+  const [licensesLoading, setLicensesLoading] = useState(null);
 
   const [form, setForm] = useState({
     title: '', ipType: 0, descriptionHash: '', contentIdentifier: '',
@@ -82,9 +85,32 @@ export default function IPRegistryView() {
       const tx = await registry.createLicense(id, licensee, licenseType, durationDays * 86400, royaltyBps);
       await tx.wait();
       showSuccess('License created', `${licenseType} → ${licensee}`);
+      setLicensesById((prev) => { const next = { ...prev }; delete next[id]; return next; });
       await load();
     } catch (e) {
       showError('License creation failed', e.shortMessage || e.message || String(e));
+    }
+  };
+
+  const toggleLicenses = async (id) => {
+    if (expandedId === id) {
+      setExpandedId(null);
+      return;
+    }
+    setExpandedId(id);
+    if (licensesById[id]) return;
+    setLicensesLoading(id);
+    try {
+      const registry = getContract('IPRegistry');
+      const count = Number(await registry.licenseCount(id));
+      const list = await Promise.all(
+        Array.from({ length: count }, (_, i) => registry.licenses(id, i).then((l) => l.toObject()))
+      );
+      setLicensesById((prev) => ({ ...prev, [id]: list }));
+    } catch (e) {
+      showError('Could not load licenses', e.shortMessage || e.message || String(e));
+    } finally {
+      setLicensesLoading(null);
     }
   };
 
@@ -130,16 +156,48 @@ export default function IPRegistryView() {
             ) : (
               <div className="space-y-3">
                 {assets?.map((a) => (
-                  <div key={a.id} className="card p-4 flex items-center justify-between flex-wrap gap-3">
-                    <div>
-                      <p className="font-display font-semibold text-sm text-[var(--text)]">{a.title}</p>
-                      <p className="text-xs text-[var(--text3)] mt-0.5">
-                        {IP_TYPE_LABELS[Number(a.ipType)]} · created {formatDate(a.creationDate)} {a.licensed && '· licensed'}
-                      </p>
+                  <div key={a.id} className="card p-4">
+                    <div className="flex items-center justify-between flex-wrap gap-3">
+                      <div>
+                        <p className="font-display font-semibold text-sm text-[var(--text)]">{a.title}</p>
+                        <p className="text-xs text-[var(--text3)] mt-0.5">
+                          {IP_TYPE_LABELS[Number(a.ipType)]} · created {formatDate(a.creationDate)} {a.licensed && '· licensed'}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button onClick={() => toggleLicenses(a.id)} className="btn-secondary flex items-center gap-1.5 !px-3 !py-1.5">
+                          {expandedId === a.id ? <ChevronUp size={12} /> : <ChevronDown size={12} />} Licenses
+                        </button>
+                        <button onClick={() => handleCreateLicense(a.id)} className="btn-secondary flex items-center gap-1.5 !px-3 !py-1.5">
+                          <FileSignature size={12} /> Create License
+                        </button>
+                      </div>
                     </div>
-                    <button onClick={() => handleCreateLicense(a.id)} className="btn-secondary flex items-center gap-1.5 !px-3 !py-1.5">
-                      <FileSignature size={12} /> Create License
-                    </button>
+
+                    {expandedId === a.id && (
+                      <div className="mt-3 pt-3 border-t" style={{ borderColor: 'var(--border)' }}>
+                        {licensesLoading === a.id ? (
+                          <div className="flex items-center gap-2 text-xs text-[var(--text2)]"><Loader2 size={12} className="animate-spin" /> Loading licenses…</div>
+                        ) : !licensesById[a.id]?.length ? (
+                          <p className="text-xs text-[var(--text3)]">No licenses issued yet.</p>
+                        ) : (
+                          <div className="space-y-2">
+                            {licensesById[a.id].map((l, i) => (
+                              <div key={i} className="p-2.5 rounded-lg flex items-center justify-between flex-wrap gap-2" style={{ background: 'var(--surface2)' }}>
+                                <div className="text-xs">
+                                  <span className="font-mono text-[var(--text)]">{l.licenseType}</span>
+                                  <span className="text-[var(--text3)]"> → {l.licensee.slice(0, 6)}…{l.licensee.slice(-4)}</span>
+                                  <span className="text-[var(--text3)]"> · {(Number(l.royaltyRate) / 100).toFixed(2)}% royalty · {l.endDate == 0n ? 'perpetual' : `until ${formatDate(l.endDate)}`}</span>
+                                </div>
+                                <span className="badge" style={{ background: l.active ? 'rgba(46,204,113,0.12)' : 'var(--surface2)', color: l.active ? 'var(--green)' : 'var(--text3)' }}>
+                                  {l.active ? 'Active' : 'Inactive'}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

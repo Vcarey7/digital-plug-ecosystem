@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Landmark, Loader2, PlusCircle, ClipboardCheck } from 'lucide-react';
+import { Landmark, Loader2, PlusCircle, ClipboardCheck, ChevronDown, ChevronUp } from 'lucide-react';
 import { useWeb3 } from '../contexts/Web3Context';
 import { useNotification } from '../contexts/NotificationContext';
 import ConnectPrompt from '../components/shared/ConnectPrompt';
@@ -16,6 +16,9 @@ export default function LicenseRegistryView() {
   const [licenses, setLicenses] = useState(null);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [expandedId, setExpandedId] = useState(null);
+  const [eventsById, setEventsById] = useState({});
+  const [eventsLoading, setEventsLoading] = useState(null);
 
   const [form, setForm] = useState({
     licenseNumber: '', stateCode: '', licenseType: 0, businessName: '',
@@ -77,9 +80,33 @@ export default function LicenseRegistryView() {
       const tx = await registry.logComplianceEvent(id, eventHash);
       await tx.wait();
       showSuccess('Compliance event logged', eventHash);
+      setEventsById((prev) => { const next = { ...prev }; delete next[id]; return next; });
+      if (expandedId === id) await loadEvents(id);
     } catch (e) {
       showError('Log failed', e.shortMessage || e.message || String(e));
     }
+  };
+
+  const loadEvents = async (id) => {
+    setEventsLoading(id);
+    try {
+      const registry = getContract('LicenseRegistry');
+      const events = await registry.getComplianceEvents(id);
+      setEventsById((prev) => ({ ...prev, [id]: events }));
+    } catch (e) {
+      showError('Could not load compliance events', e.shortMessage || e.message || String(e));
+    } finally {
+      setEventsLoading(null);
+    }
+  };
+
+  const toggleEvents = async (id) => {
+    if (expandedId === id) {
+      setExpandedId(null);
+      return;
+    }
+    setExpandedId(id);
+    if (!eventsById[id]) await loadEvents(id);
   };
 
   return (
@@ -131,16 +158,41 @@ export default function LicenseRegistryView() {
             ) : (
               <div className="space-y-3">
                 {licenses?.map((l) => (
-                  <div key={l.id} className="card p-4 flex items-center justify-between flex-wrap gap-3">
-                    <div>
-                      <p className="font-display font-semibold text-sm text-[var(--text)]">{l.businessName} — {l.licenseNumber}</p>
-                      <p className="text-xs text-[var(--text3)] mt-0.5">
-                        {l.stateCode} · {LICENSE_TYPE_LABELS[Number(l.licenseType)]} · {LICENSE_STATUS_LABELS[Number(l.status)]} · expires {formatDate(l.expirationDate)}
-                      </p>
+                  <div key={l.id} className="card p-4">
+                    <div className="flex items-center justify-between flex-wrap gap-3">
+                      <div>
+                        <p className="font-display font-semibold text-sm text-[var(--text)]">{l.businessName} — {l.licenseNumber}</p>
+                        <p className="text-xs text-[var(--text3)] mt-0.5">
+                          {l.stateCode} · {LICENSE_TYPE_LABELS[Number(l.licenseType)]} · {LICENSE_STATUS_LABELS[Number(l.status)]} · expires {formatDate(l.expirationDate)}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button onClick={() => toggleEvents(l.id)} className="btn-secondary flex items-center gap-1.5 !px-3 !py-1.5">
+                          {expandedId === l.id ? <ChevronUp size={12} /> : <ChevronDown size={12} />} Compliance History
+                        </button>
+                        <button onClick={() => handleLogCompliance(l.id)} className="btn-secondary flex items-center gap-1.5 !px-3 !py-1.5">
+                          <ClipboardCheck size={12} /> Log Compliance
+                        </button>
+                      </div>
                     </div>
-                    <button onClick={() => handleLogCompliance(l.id)} className="btn-secondary flex items-center gap-1.5 !px-3 !py-1.5">
-                      <ClipboardCheck size={12} /> Log Compliance
-                    </button>
+
+                    {expandedId === l.id && (
+                      <div className="mt-3 pt-3 border-t" style={{ borderColor: 'var(--border)' }}>
+                        {eventsLoading === l.id ? (
+                          <div className="flex items-center gap-2 text-xs text-[var(--text2)]"><Loader2 size={12} className="animate-spin" /> Loading events…</div>
+                        ) : !eventsById[l.id]?.length ? (
+                          <p className="text-xs text-[var(--text3)]">No compliance events logged yet.</p>
+                        ) : (
+                          <ul className="space-y-1.5">
+                            {eventsById[l.id].map((ev, i) => (
+                              <li key={i} className="text-xs font-mono text-[var(--text2)] p-2 rounded-lg" style={{ background: 'var(--surface2)' }}>
+                                {ev}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
