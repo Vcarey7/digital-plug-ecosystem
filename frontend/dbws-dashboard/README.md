@@ -94,11 +94,10 @@ Verified end-to-end against a live local Hardhat deployment (6 registries + Reve
 the node's JSON-RPC (Hardhat auto-signs `eth_sendTransaction` for its own default accounts, so
 no private key handling was needed in the shim): wallet connect, portfolio aggregation, full
 domain commit→wait→reveal registration with USDC approval, entity/IP/license registration,
-and community free-tier join. All six registry views render without error.
+community free-tier join, and (in a follow-up pass) the IP license and license
+compliance-event history panels. All six registry views render without error.
 
 ## Not yet done
 
 - Amoy/mainnet deployment (needs a funded wallet — user-executed, not this dashboard)
 - Re-pointing at Amoy addresses once deployed (`npm run sync-addresses amoy`)
-- IP license listing/viewing UI (creation is wired; browsing existing licenses on an asset is not)
-- License compliance-event history viewer (logging is wired; browsing past events is not)
