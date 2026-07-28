@@ -1,50 +1,67 @@
 # Going live: accounts, keys, and deployment
 
-The app now requires three external accounts before anyone can sign up or pay:
-**Supabase** (accounts + database), **Stripe** (billing), and **Vercel** (hosting —
-GitHub Pages can't run the serverless functions Stripe needs). None of these
-steps can be done on your behalf; each one needs your own account. Secret keys
-should only ever be pasted into Supabase/Stripe/Vercel's own dashboards — never
-into a chat.
+Supabase and Stripe are already provisioned (below). **Vercel is the only
+remaining step**, and it has to be done in your dashboard — secret keys should
+only ever be pasted there, never into a chat.
 
-## 1. Supabase
+## 1. Supabase — done
 
-1. Create a project at [supabase.com](https://supabase.com) (free tier is fine to start).
-2. Open **SQL Editor** → **New query**, paste the contents of
-   [`supabase/schema.sql`](./supabase/schema.sql), and run it. This creates:
-   - `app_data` — one JSON row per (user, feature) holding that user's expenses,
-     ventures, payroll roster/runs, and income entries/profile. Row-level
-     security means each user can only ever see their own rows.
-   - `subscriptions` — one row per user tracking their Stripe status. Users can
-     read their own row; only the Stripe webhook (via the service role key)
-     can write to it.
-3. Under **Authentication → Providers**, email/password is enabled by default —
-   nothing else to change unless you want to add Google/etc. later.
-4. Under **Authentication → URL Configuration**, once you know your Vercel URL
-   (step 3 below), add it as a **Redirect URL** and **Site URL**.
-5. Grab three values from **Settings → API**:
-   - `Project URL` → `VITE_SUPABASE_URL`
-   - `anon` `public` key → `VITE_SUPABASE_ANON_KEY`
-   - `service_role` key → `SUPABASE_SERVICE_ROLE_KEY` (**secret** — server-side only, never in the browser bundle)
+Reusing the existing "Plug time app" project (`fdeizufozekaytwjbstg`). The
+schema in [`supabase/schema.sql`](./supabase/schema.sql) has been applied:
 
-## 2. Stripe
+- `app_data` — one JSON row per (user, feature) holding that user's expenses,
+  ventures, payroll roster/runs, and income entries/profile. RLS means each
+  user only ever sees their own rows.
+- `subscriptions` — one row per user tracking Stripe status. Users can read
+  their own row; only the webhook (service role key) can write to it.
 
-1. In the Stripe Dashboard, create a **Product** (e.g. "DPC Finance Suite") with
-   a recurring **Price** (monthly or yearly). Copy its price ID (`price_...`) →
-   `STRIPE_PRICE_ID`.
-2. **Developers → API keys** → copy the **Secret key** → `STRIPE_SECRET_KEY`.
-   (The app never uses a publishable key — checkout happens via Stripe-hosted
-   Checkout Sessions, not Stripe.js in the browser.)
-3. **Developers → Webhooks → Add endpoint**:
-   - URL: `https://<your-vercel-domain>/api/stripe-webhook`
-   - Events to send: `checkout.session.completed`, `customer.subscription.created`,
-     `customer.subscription.updated`, `customer.subscription.deleted`
-   - Copy the **Signing secret** (`whsec_...`) → `STRIPE_WEBHOOK_SECRET`
-   - You'll need to create this *after* the first Vercel deploy, once you have
-     a real domain to point it at (a placeholder deploy works fine first, then
-     come back and add the webhook once you know the URL).
+Values you'll need for Vercel:
+- `VITE_SUPABASE_URL` = `https://fdeizufozekaytwjbstg.supabase.co`
+- `VITE_SUPABASE_ANON_KEY` = the `anon` key from **Settings → API** in the
+  [Supabase dashboard](https://supabase.com/dashboard/project/fdeizufozekaytwjbstg/settings/api-keys)
+- `SUPABASE_SERVICE_ROLE_KEY` = the `service_role` key from that same page
+  (**secret** — this one isn't retrievable through my tools on purpose; copy
+  it yourself)
 
-## 3. Vercel
+⚠️ **Separate security issue found in this project, unrelated to this app:**
+four existing tables — `income_entries`, `employees`, `payroll_runs`,
+`verifications` — have Row-Level Security **disabled**, meaning anyone with
+the public anon key can currently read or write every row in them. I didn't
+touch these (turning on RLS without matching policies would break whatever
+depends on them) or investigate what created them. Worth a look before this
+goes live publicly:
+```sql
+ALTER TABLE public.income_entries ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.employees ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.payroll_runs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.verifications ENABLE ROW LEVEL SECURITY;
+```
+(Only run this once you've added matching policies — enabling RLS with no
+policies blocks all access, including your own.)
+
+Once you know your Vercel URL (step 3 below), also add it under
+**Authentication → URL Configuration** as a Redirect URL and Site URL.
+
+## 2. Stripe — done
+
+Product **"DPC Finance Suite"** created at **$15/month**
+(`price_1Ty94KLuvBwmNQqhG1UnLRj6`) on your existing "Green Pay" Stripe account.
+
+Values you'll need for Vercel:
+- `STRIPE_PRICE_ID` = `price_1Ty94KLuvBwmNQqhG1UnLRj6`
+- `STRIPE_SECRET_KEY` = from [Stripe API keys](https://dashboard.stripe.com/acct_1RJPQ2LuvBwmNQqh/apikeys)
+  (**secret** — not retrievable through my tools; copy it yourself)
+
+Still to do, *after* the first Vercel deploy (once you know the real domain):
+
+**Developers → Webhooks → Add endpoint**:
+- URL: `https://<your-vercel-domain>/api/stripe-webhook`
+- Events to send: `checkout.session.completed`, `customer.subscription.created`,
+  `customer.subscription.updated`, `customer.subscription.deleted`
+- Copy the **Signing secret** (`whsec_...`) → `STRIPE_WEBHOOK_SECRET`, add it
+  to Vercel, and redeploy.
+
+## 3. Vercel — the only step left
 
 1. Import this GitHub repo as a new Vercel project.
 2. In the import screen (or **Settings → General** after import), set
@@ -55,17 +72,16 @@ into a chat.
 
    | Name | Value |
    |---|---|
-   | `VITE_SUPABASE_URL` | from Supabase step 5 |
-   | `VITE_SUPABASE_ANON_KEY` | from Supabase step 5 |
-   | `SUPABASE_SERVICE_ROLE_KEY` | from Supabase step 5 (secret) |
-   | `STRIPE_SECRET_KEY` | from Stripe step 2 (secret) |
-   | `STRIPE_PRICE_ID` | from Stripe step 1 |
-   | `STRIPE_WEBHOOK_SECRET` | from Stripe step 3 (secret, added after first deploy) |
+   | `VITE_SUPABASE_URL` | `https://fdeizufozekaytwjbstg.supabase.co` |
+   | `VITE_SUPABASE_ANON_KEY` | from Supabase dashboard (see above) |
+   | `SUPABASE_SERVICE_ROLE_KEY` | from Supabase dashboard (secret, see above) |
+   | `STRIPE_SECRET_KEY` | from Stripe dashboard (secret, see above) |
+   | `STRIPE_PRICE_ID` | `price_1Ty94KLuvBwmNQqhG1UnLRj6` |
+   | `STRIPE_WEBHOOK_SECRET` | added after first deploy, see above |
    | `APP_URL` | your Vercel production URL, e.g. `https://finance-suite.vercel.app` (no trailing slash) |
 
-4. Deploy. Once it's live, go back and finish Stripe step 3 (webhook) and
-   Supabase step 4 (redirect URL) using the real domain, then redeploy so
-   `APP_URL` is set.
+4. Deploy. Once it's live, go back and finish the Stripe webhook and Supabase
+   redirect URL using the real domain, then redeploy so `APP_URL` is set.
 
 ## What this gets you
 
