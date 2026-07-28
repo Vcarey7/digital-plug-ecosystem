@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Clock, DollarSign, Download, FileText, Pencil, Plus, Printer, Search, Target, Trash2, Users, X } from "lucide-react";
+import { cloudGet, cloudSet } from "./lib/cloudStorage.js";
 
 const INCOME_TYPES = [
   "Client Work",
@@ -145,40 +146,41 @@ export default function IncomeLedger() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    try {
-      const storedEntries = localStorage.getItem("dpcIncomeLedgerEntries");
-      if (storedEntries) setEntries(JSON.parse(storedEntries));
-    } catch (e) {
-      /* no existing income entries */
-    }
+    (async () => {
+      try {
+        const storedEntries = await cloudGet("dpcIncomeLedgerEntries");
+        if (storedEntries) setEntries(storedEntries);
+      } catch (e) {
+        /* no existing income entries */
+      }
 
-    try {
-      const storedProfile = localStorage.getItem("dpcIncomeLedgerProfile");
-      const parsedProfile = storedProfile ? JSON.parse(storedProfile) : {};
-      const normalizedProfile = { ...DEFAULT_PROFILE, ...parsedProfile, documentId: parsedProfile.documentId || documentId() };
-      setProfile(normalizedProfile);
-      localStorage.setItem("dpcIncomeLedgerProfile", JSON.stringify(normalizedProfile));
-    } catch (e) {
-      setProfile({ ...DEFAULT_PROFILE, documentId: documentId() });
-    }
-    setLoaded(true);
+      try {
+        const parsedProfile = (await cloudGet("dpcIncomeLedgerProfile")) || {};
+        const normalizedProfile = { ...DEFAULT_PROFILE, ...parsedProfile, documentId: parsedProfile.documentId || documentId() };
+        setProfile(normalizedProfile);
+        await cloudSet("dpcIncomeLedgerProfile", normalizedProfile);
+      } catch (e) {
+        setProfile({ ...DEFAULT_PROFILE, documentId: documentId() });
+      }
+      setLoaded(true);
+    })();
   }, []);
 
-  const persistEntries = (next) => {
+  const persistEntries = async (next) => {
     setEntries(next);
     try {
-      localStorage.setItem("dpcIncomeLedgerEntries", JSON.stringify(next));
+      await cloudSet("dpcIncomeLedgerEntries", next);
       setError("");
     } catch (e) {
       setError("Couldn't save the income ledger — try again.");
     }
   };
 
-  const persistProfile = (next) => {
+  const persistProfile = async (next) => {
     const normalized = { ...next, documentId: next.documentId || documentId() };
     setProfile(normalized);
     try {
-      localStorage.setItem("dpcIncomeLedgerProfile", JSON.stringify(normalized));
+      await cloudSet("dpcIncomeLedgerProfile", normalized);
       setError("");
     } catch (e) {
       setError("Couldn't save the document profile — try again.");

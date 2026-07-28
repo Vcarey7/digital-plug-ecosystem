@@ -6,25 +6,25 @@ A runnable Vite + React finance suite for Digital Plug Co. It includes:
 - **Payroll App** — manage a roster, estimate pay runs from hourly or salary workers, configure federal/state/local withholding percentages, calculate net pay and employer cost, summarize payroll by employee/venture, and export CSV files.
 - **Income Documentation Ledger** — log billable hours by client/source, auto-calculate hourly income, filter 30/60/90-day proof windows, print a clean self-employment income ledger for housing applications, export CSV, and track a rent-readiness Shelter Score.
 
-Data is stored locally in the browser via `localStorage`; no backend or login is required.
+It's a subscription product: sign-up/sign-in is backed by Supabase Auth, each
+user's data lives in Postgres (scoped to their account, not the browser), and
+access is gated behind an active Stripe subscription. See
+[`SETUP.md`](./SETUP.md) for the one-time account setup (Supabase, Stripe,
+Vercel) required before any of this works.
 
 ## Run locally
 
-From this directory:
+Copy `.env.example` to `.env.local` and fill in the Supabase values (see
+`SETUP.md`) — the app won't boot without them. From this directory:
 
 ```bash
 npm install
 npm run dev
 ```
 
-Vite defaults to `http://localhost:5173`.
-
-You can also run from the repository root:
-
-```bash
-npm run install:apps
-npm run dev
-```
+Vite defaults to `http://localhost:5173`. The `/api` serverless functions
+(Stripe checkout, billing portal, webhook) only run when deployed to Vercel —
+`vercel dev` can emulate them locally if needed.
 
 ## Build
 
@@ -40,9 +40,10 @@ The static bundle is written to `dist/`.
 npm run preview
 ```
 
-## Deployment (GitHub Pages)
+## Deployment
 
-The workflow at `.github/workflows/deploy-expense-ledger.yml` builds and publishes the static app on every push to `main` touching `frontend/expense-ledger/`. One-time setup: Settings → Pages → Source → GitHub Actions.
+Hosted on Vercel (not GitHub Pages — Pages can't run the `/api` serverless
+functions Stripe needs). See [`SETUP.md`](./SETUP.md) for the full walkthrough.
 
 ## Notes
 

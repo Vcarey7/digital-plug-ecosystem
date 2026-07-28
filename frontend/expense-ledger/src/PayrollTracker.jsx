@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { AlertTriangle, Calculator, Download, Pencil, Plus, Search, Trash2, Users, Wallet, X } from "lucide-react";
+import { cloudGet, cloudSet } from "./lib/cloudStorage.js";
 
 const DEFAULT_VENTURES = [
   "Digital Plug Co.",
@@ -176,38 +177,40 @@ export default function PayrollTracker() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    try {
-      const storedEmployees = localStorage.getItem("dpcPayrollEmployees");
-      if (storedEmployees) setEmployees(JSON.parse(storedEmployees));
-    } catch (e) {
-      /* no existing payroll roster */
-    }
-    try {
-      const storedRuns = localStorage.getItem("dpcPayrollRuns");
-      if (storedRuns) setPayRuns(JSON.parse(storedRuns));
-    } catch (e) {
-      /* no existing payroll runs */
-    }
-    setLoaded(true);
+    (async () => {
+      try {
+        const storedEmployees = await cloudGet("dpcPayrollEmployees");
+        if (storedEmployees) setEmployees(storedEmployees);
+      } catch (e) {
+        /* no existing payroll roster */
+      }
+      try {
+        const storedRuns = await cloudGet("dpcPayrollRuns");
+        if (storedRuns) setPayRuns(storedRuns);
+      } catch (e) {
+        /* no existing payroll runs */
+      }
+      setLoaded(true);
+    })();
   }, []);
 
   const activeEmployees = useMemo(() => employees.filter((employee) => employee.active !== false), [employees]);
   const ventures = useMemo(() => Array.from(new Set([...DEFAULT_VENTURES, ...employees.map((employee) => employee.venture).filter(Boolean)])), [employees]);
 
-  const persistEmployees = (next) => {
+  const persistEmployees = async (next) => {
     setEmployees(next);
     try {
-      localStorage.setItem("dpcPayrollEmployees", JSON.stringify(next));
+      await cloudSet("dpcPayrollEmployees", next);
       setError("");
     } catch (e) {
       setError("Couldn't save the payroll roster — try again.");
     }
   };
 
-  const persistRuns = (next) => {
+  const persistRuns = async (next) => {
     setPayRuns(next);
     try {
-      localStorage.setItem("dpcPayrollRuns", JSON.stringify(next));
+      await cloudSet("dpcPayrollRuns", next);
       setError("");
     } catch (e) {
       setError("Couldn't save the pay run — try again.");

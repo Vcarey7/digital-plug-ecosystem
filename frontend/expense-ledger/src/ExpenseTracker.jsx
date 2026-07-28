@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Plus, Trash2, Download, Search, Receipt, X, Pencil, ChevronDown } from "lucide-react";
+import { cloudGet, cloudSet } from "./lib/cloudStorage.js";
 
 const CATEGORIES = [
   { name: "Advertising & Marketing", pct: 100 },
@@ -76,26 +77,28 @@ export default function ExpenseTracker() {
 
   // Load persisted data
   useEffect(() => {
-    try {
-      const ex = localStorage.getItem("expenses");
-      if (ex) setExpenses(JSON.parse(ex));
-    } catch (e) {
-      /* no existing data */
-    }
-    try {
-      const v = localStorage.getItem("ventures");
-      if (v) setVentures(JSON.parse(v));
-    } catch (e) {
-      /* no existing data */
-    }
-    setLoaded(true);
+    (async () => {
+      try {
+        const ex = await cloudGet("expenses");
+        if (ex) setExpenses(ex);
+      } catch (e) {
+        /* no existing data */
+      }
+      try {
+        const v = await cloudGet("ventures");
+        if (v) setVentures(v);
+      } catch (e) {
+        /* no existing data */
+      }
+      setLoaded(true);
+    })();
   }, []);
 
-  const persistExpenses = (next) => {
+  const persistExpenses = async (next) => {
     setExpenses(next);
     setSaving(true);
     try {
-      localStorage.setItem("expenses", JSON.stringify(next));
+      await cloudSet("expenses", next);
       setError("");
     } catch (e) {
       setError("Couldn't save — try again.");
@@ -103,10 +106,10 @@ export default function ExpenseTracker() {
     setSaving(false);
   };
 
-  const persistVentures = (next) => {
+  const persistVentures = async (next) => {
     setVentures(next);
     try {
-      localStorage.setItem("ventures", JSON.stringify(next));
+      await cloudSet("ventures", next);
     } catch (e) {
       setError("Couldn't save the venture list.");
     }
