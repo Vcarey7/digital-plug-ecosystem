@@ -132,6 +132,12 @@ export default function App() {
       {activeApp === "expenses" && <ExpenseTracker />}
       {activeApp === "payroll" && <PayrollTracker />}
       {activeApp === "income" && <IncomeLedger />}
+
+      <footer className="border-t border-[rgba(237,231,216,0.12)] px-6 py-6 text-center text-[10px] text-[#8A8F98] md:px-10">
+        <a href="#/terms" className="underline hover:text-[#EDE7D8]">Terms</a>
+        {" · "}
+        <a href="#/privacy" className="underline hover:text-[#EDE7D8]">Privacy</a>
+      </footer>
     </div>
   );
 }
