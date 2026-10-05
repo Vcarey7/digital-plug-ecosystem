@@ -1,11 +1,12 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import {
-  LayoutGrid, Globe, Building2, Copyright, Landmark, Users, FileText,
+  LayoutGrid, ShoppingCart, Globe, Building2, Copyright, Landmark, Users, FileText,
 } from 'lucide-react';
 
 const NAV = [
   { to: '/', label: 'Portfolio', icon: LayoutGrid, end: true },
+  { to: '/buy', label: 'Buy a Domain', icon: ShoppingCart },
   { to: '/domains', label: 'Domains', icon: Globe },
   { to: '/entities', label: 'Entities', icon: Building2 },
   { to: '/ip', label: 'IP Assets', icon: Copyright },
