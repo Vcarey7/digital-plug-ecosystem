@@ -1,0 +1,73 @@
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&family=DM+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+:root {
+  --black: #0a0a0a;
+  --surface: #111111;
+  --surface2: #181818;
+  --border: rgba(255, 255, 255, 0.08);
+  --gold: #d4a843;
+  --gold2: #f0c870;
+  --green: #2ecc71;
+  --red: #e74c3c;
+  --text: #f5f0e8;
+  --text2: #a09888;
+  --text3: #6a6055;
+}
+
+body {
+  background: var(--black);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+}
+
+.font-display {
+  font-family: 'Syne', sans-serif;
+}
+
+.font-mono {
+  font-family: 'DM Mono', monospace;
+}
+
+@layer components {
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+  .btn-primary {
+    @apply font-bold text-xs uppercase tracking-wide px-5 py-2.5 rounded-lg transition;
+    font-family: 'Syne', sans-serif;
+    background: var(--gold);
+    color: #000;
+  }
+  .btn-primary:hover:not(:disabled) {
+    background: var(--gold2);
+  }
+  .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .btn-secondary {
+    @apply font-semibold text-xs uppercase tracking-wide px-5 py-2.5 rounded-lg transition border;
+    font-family: 'Syne', sans-serif;
+    color: var(--text2);
+    border-color: var(--border);
+  }
+  .btn-secondary:hover:not(:disabled) {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+  .input {
+    @apply w-full px-3 py-2.5 rounded-lg outline-none;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+  .input:focus {
+    border-color: var(--gold);
+  }
+  .badge {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium;
+  }
+}
